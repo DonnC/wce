@@ -6,14 +6,15 @@ description: A look into real-world bot templates
 Imagine we have a chatbot which manages System demo booking to interested clients.
 
 We can have a start menu (first step) as below
+
 ```yaml
 "MAIN_MENU":
   type: button
   message:
     body: |
-        Hi, I am JAWCE 🤖, your ERP System booking assistant.
+      Hi, I am WCE 🤖, your ERP System booking assistant.
 
-        What would you like to do today?"
+      What would you like to do today?"
     buttons:
       - Book a demo
       - Help
@@ -28,10 +29,10 @@ The `type` - Specifies that this template should show as a button message on the
 
 The `message` - Message to show the user, like a button body
 
-The `buttons` - The buttons to show to the user which the user will select /  click
+The `buttons` - The buttons to show to the user which the user will select / click
 
 The `routes` - To know where to go when user selects any of the button options we presented them.
-                The routes maps the user response to the next stage defined in your `templates` folder.
+The routes maps the user response to the next stage defined in your `templates` folder.
 
 Let's see more templates
 
@@ -48,7 +49,7 @@ Let's see more templates
         "BOOK_STAGE":
             type: button
             message:
-                body: "Kindly confirm your system demo booking request by clicking the start button"
+                body: "Start your system demo booking request by clicking the start button"
                 footer: ERP Demo
                 buttons:
                 - Start
@@ -63,7 +64,7 @@ Let's see more templates
         ```yaml
         1000:
             type: button
-            prop: userSelectedErp
+            prop: selectedErp
             message:
                 body: "Great choice, select your ERP of choice"
                 buttons:
@@ -79,11 +80,11 @@ Let's see more templates
         ```yaml
         2000:
             type: text
-            prop: userSelectedBookingDate
-            message:
-                - "Kindly provide your preferred demo date and time in 24hr format"
-                - ""
-                - "Format: _DD/MM/YYYY HH:MM_ e.g *23/05/2024 10:00*"
+            prop: selectedBookingDate
+            message: |
+                Kindly provide your preferred demo date and time in 24hr format
+
+                Format: _DD/MM/YYYY HH:MM_ e.g *23/05/2024 10:00*
             routes:
                 "re:.*": 3000
         ```
@@ -95,17 +96,17 @@ Let's see more templates
         3000:
             type: button
             message:
-                body: "Your booking has been recorded. I will notify you 30mins before on your selected demo day 🙂"
+                body: "Your booking has been recorded. I will notify you 30mins before 🙂"
                 buttons:
                     - Menu
             routes:
                 "menu": "MAIN_MENU"
         ```
     </TabItem>
+
 </Tabs>
 
-
-By now you can picture what the above is doing. You can name your stages any way you want, numbers or text - your choice.
+By now you can picture what the above is doing.
 
 This will be the chatbot conversation brain and it will be hopping from 1 stage to the other as you define it 😀.
 

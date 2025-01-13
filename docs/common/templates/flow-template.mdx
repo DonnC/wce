@@ -1,0 +1,26 @@
+---
+title: WhatsApp Flow
+description: Handle & process flow templates
+---
+
+WhatsApp introduced [flows](https://business.whatsapp.com/products/whatsapp-flows), mobile-app-screen like message types.
+
+This type makes collecting user information a breeze and greatly improves your chatbot UX
+
+**WCE** has out-of-the box support for flows. An example flow template will be as below
+
+```yaml
+"STAGE_NAME":
+  type: flow
+  message:
+    id: flow-id
+    name: flow-name
+    title: "My Flow Title"
+    body: "Flow message body"
+    button: flow-btn
+  routes:
+    "re:.*": "NEXT_STAGE"
+```
+
+WCE tries to keep template signature similar, a flow template can have a `title`, `body` and or `footer`
+like any other interactive message template.

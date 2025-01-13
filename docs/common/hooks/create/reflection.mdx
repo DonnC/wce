@@ -1,0 +1,107 @@
+---
+title: Reflective Hooks
+description: Runtime class and object manipulation
+---
+
+Reflection allows dynamic inspection and manipulation of classes and objects on runtime.
+
+WCE makes use of reflection for all hooks by default.
+
+This opens up endless possibilities, enabling you to define any complex business logic, use any other libraries, connect to db etc
+
+> Learn more about [Java Reflection](https://docs.oracle.com/javase/tutorial/reflect/)
+
+> Learn more about [Python Reflection](https://gamedevacademy.org/python-reflection-tutorial-complete-guide/)
+
+Consider the template below and the corresponding hooks.
+
+## Template
+
+#### JAWCE
+
+```yaml
+6005:
+  type: text
+  template: "com.example.ExampleReflectionHook:getOrderInfo"
+  message: "Provide reference for order: {{ type }}, {{ currency }} {{ amount }}"
+  routes:
+    "re:\\d+": 6006
+```
+
+#### PYWCE
+
+```yaml
+"PROMPT-ORDER-STAGE":
+  type: button
+  on-receive: "example.engine_chatbot.hooks.order_service.manage_order"
+  checkpoint: true
+  message:
+    title: Order
+    body: "Confirm the above order. Would you like to save order?"
+    footer: pywce
+    buttons:
+      - Save
+      - Cancel
+  routes:
+    "save": "CHECKOUT-STAGE"
+    "cancel": "PREVIOUS-STAGE"
+```
+
+## Hook business logic
+
+<CodeGroup title="Business Logic">
+  ```python
+  # example.engine_chatbot.hooks.order_service.py
+
+  from pywce import HookArg
+
+  def manage_order(arg: HookArg) -> HookArg:
+    """
+    if user answers yes, save user order in session to db
+    """
+    print(f"Received hook arg: {arg}")
+
+    if arg.user_input.lower() == "yes":
+      saved_order_id = arg.session_manager.get(
+          session_id=arg.user.wa_id,
+          key="order_id"
+      )
+
+      # TODO: implement business logic for saving user order
+
+      return arg
+```
+
+  ```java
+    // com.example.ExampleReflectionHook.java
+
+    @Sl4j
+    public class ExampleReflectionHook {
+      private final HookArgs args;
+
+      public ExampleReflectionHook(HookArgs args) {
+        this.args = args;
+      }
+
+      public Object getOrderInfo() {
+        log.info("Received hook args: {}", this.args);
+
+        // populate dynamic variables
+        args.setTemplateDynamicBody(
+            new TemplateDynamicBody(
+                null,
+                null,
+                Map.of(
+                    "type", "Gaming Chair",
+                    "currency", "USD",
+                    "amount", 3.50
+                  )
+              ));
+
+        return args;
+      }
+    }
+
+```
+
+</CodeGroup>

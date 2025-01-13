@@ -1,6 +1,6 @@
 {
-  "name": "wce",
-  "description": "Template-driven whatsapp chatbot builders",
+  "name": "WCE",
+  "description": "Template-driven whatsapp chatbot engine",
   "$schema": "https://docs.page/schema.json",
   "theme": {
     "primary": "#36B9B9"
@@ -32,17 +32,17 @@
     },
     {
       "id": "pywce",
-      "title": "Python",
+      "title": "pywce (Python)",
       "href": "/python"
     },
     {
       "id": "jawce",
-      "title": "Java",
+      "title": "jawce (Java)",
       "href": "/java"
     },
     {
       "id": "session",
-      "title": "Session",
+      "title": "Session Management",
       "href": "/session"
     }
   ],
@@ -58,32 +58,39 @@
         },
         {
           "title": "Demo",
-          "href": "/demo",
+          "href": "/common/demo",
           "icon": "snowman"
         },
         {
           "title": "Getting Started",
-          "href": "/getting-started",
+          "href": "/common/getting-started",
           "icon": "star"
+        }
+      ]
+    },
+    {
+      "group": "Templates",
+      "tab": "root",
+      "pages": [
+        {
+          "title": "Overview",
+          "href": "/common/templates/index",
+          "icon": "pen-nib"
         },
         {
-          "title": "Configuration",
-          "href": "/configuration",
-          "icon": "gears"
+          "title": "Example: Booking Bot",
+          "href": "/common/templates/example-template",
+          "icon": "pen-nib"
         },
         {
-          "group": "ChatBot Templates",
-          "icon": "pen-nib",
-          "pages": [
-            {
-              "title": "Writing Templates",
-              "href": "/writing-templates"
-            },
-            {
-              "title": "Example: Booking Bot",
-              "href": "/templates/example-template"
-            }
-          ]
+          "title": "Messages",
+          "href": "/common/templates/messages",
+          "icon": "facebook-messenger"
+        },
+        {
+          "title": "Flow Template",
+          "href": "/common/templates/flow-template",
+          "icon": "facebook-messenger"
         }
       ]
     },
@@ -93,17 +100,12 @@
       "pages": [
         {
           "title": "Intro",
-          "href": "/hooks/introduction",
+          "href": "/common/hooks/introduction",
           "icon": "anchor"
         },
         {
-          "title": "Messages",
-          "href": "/hooks/messages",
-          "icon": "facebook-messenger"
-        },
-        {
           "title": "Prop",
-          "href": "/hooks/prop",
+          "href": "/common/hooks/prop",
           "icon": "bolt"
         },
         {
@@ -112,29 +114,24 @@
           "pages": [
             {
               "title": "Intro",
-              "href": "/hooks/create/intro",
+              "href": "/common/hooks/create/intro",
               "icon": "anchor"
             },
             {
-              "title": "REST Hooks",
-              "href": "/hooks/create/rest",
-              "icon": "internet-explorer"
-            },
-            {
               "title": "Reflective Hooks",
-              "href": "/hooks/create/reflection",
+              "href": "/common/hooks/create/reflection",
               "icon": "java"
             }
           ]
         },
         {
           "title": "General Hook",
-          "href": "/hooks/general-hooks",
+          "href": "/common/hooks/general-hooks",
           "icon": "atom"
         },
         {
           "title": "Template Hook",
-          "href": "/hooks/templates",
+          "href": "/common/hooks/templates",
           "icon": "anchor"
         },
         {
@@ -143,26 +140,15 @@
           "pages": [
             {
               "title": "Other Hooks",
-              "href": "/hooks/others",
+              "href": "/common/hooks/others",
               "icon": "anchor"
             },
             {
               "title": "Additional Hooks",
-              "href": "/hooks/others/more-hooks",
+              "href": "/common/hooks/others/more-hooks",
               "icon": "anchor"
             }
           ]
-        }
-      ]
-    },
-    {
-      "group": "Advanced",
-      "tab": "root",
-      "pages": [
-        {
-          "title": "Extend",
-          "href": "/advanced/extend",
-          "icon": "code"
         }
       ]
     },
@@ -174,6 +160,27 @@
           "title": "Contributing",
           "href": "/contributing",
           "icon": "bug"
+        },
+        {
+          "title": "Support",
+          "href": "/support",
+          "icon": "heart"
+        }
+      ]
+    },
+    {
+      "group": "Configuration",
+      "tab": "java",
+      "pages": [
+        {
+          "title": "Configuration",
+          "href": "/index",
+          "icon": "code"
+        },
+        {
+          "title": "Extend",
+          "href": "/java/extend",
+          "icon": "code"
         }
       ]
     }

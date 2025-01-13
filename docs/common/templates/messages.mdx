@@ -1,7 +1,8 @@
 ---
-title: Messages
+title: Template Messages
 description: Render different message types to the user
 ---
+
 The message field is a required field in a template. The rendered message on WhatsApp depends on the template `type`
 
 The engine supports the following types
@@ -20,28 +21,15 @@ The general message type, this shows a generic text message.
 ```yaml
 2000:
   type: text
-  message: "Kindly provide your preferred date and time in 24hr format"
+  message: "Type *yes* to proceed to the next stage. Else type *no*"
   routes:
-    "re:.*": 3000
-```
-
-or
-
-```yaml
-2000:
-  type: text
-  prop: bookingDate
-  message:
-    - "Kindly provide your preferred date and time in 24hr format"
-    - ""
-    - "Format: _DD/MM/YYYY HH:MM_ \ne.g *23/05/2024 10:00*"
-  routes:
-    "re:.*": 3000
+    "yes": 3000
+    "no": 404
 ```
 
 
 ## BUTTON
-Shows a button to the user. The buttons should be **NOT** more that 3 button options. The button name will be
+Shows a button to the user. The buttons should **NOT** exceed 3 button options. The button name will be
 the button id. You can use the button name in the `routes` field to match the clicked button id
 
 ```yaml
@@ -49,7 +37,7 @@ the button id. You can use the button name in the `routes` field to match the cl
   type: button
   message:
     title: Book Demo
-    body: "Great, confirm your booking request by clicking the start button"
+    body: "Great, begin your booking request by clicking the start button"
     buttons:
       - Start
       - Return

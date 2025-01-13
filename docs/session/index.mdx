@@ -1,13 +1,21 @@
 ---
 title: Overview
-description: JAWCE session / cache management
+description: session / cache management
 ---
 
+The session manager handles only 1 task: to manage (save, retrieve, delete) user and engine abitrary data
+
+It stores engine data which keeps track of where the user is in your conversational flows.
+
 <Info>
-    JAWCE comes with default `SessionManager` implementations out-of-the-box
+    WCE comes with default `SessionManager` implementations out-of-the-box
 </Info>
 
-## Default implementations
+## Pywce Default implementation
+- Dict based session manager
+
+
+## Jawce Default implementations
 - FileBasedSessionManager
 - CaffeineSessionManager
 - HazelcastSessionManager
@@ -15,13 +23,20 @@ description: JAWCE session / cache management
 
 You can use any of the default implementations or switch any of them at any time.
 
+## Session methods
+All session managers implements a single `ISessionManager` interface.
+You must implement this class for your own session management logic.
+
+See a Java interface representation of ISessionManager below. 
+`This is the same class or Python abstract class too`
+
+
 <Info>
-    The sample chatbot uses `CaffeineSessionManager` by default
+    `ISessionManager.session(<session-id>)` must return a ISessionManager instance.
+
+    Nomatter how many times it called, it should return the session object of the passed session-id
 </Info>
 
-## Session methods
-All session managements implements a single `ISessionManager` interface. You can also implement your own session manager
-and use it in your chatbot
 
 ```java
 public interface ISessionManager {
@@ -66,7 +81,7 @@ public interface ISessionManager {
 ```
 
 <Info>
-    `ISessionManager` and its default implementations are not tightly coupled with JAWCE main engine.
+    `ISessionManager` and its default implementations can be used independently.
 
-    You can use this in any other project
+    You can use this the session manager without tying it to the engine.
 </Info>

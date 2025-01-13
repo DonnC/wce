@@ -1,36 +1,102 @@
 ---
-title: Overview
-description: An Open Source Template based WhatsApp Cloud ChatBot Engine.
+title: WhatsApp Chatbot Engine
+description: Your ultimate solution for building efficient, scalable, and template-driven WhatsApp chatbots
 ---
 
 <Warning>Documentation still in progress</Warning>
 
-**JAWCE** - Java WhatsApp Cloud API Engine, is a free Open Source project, allowing you to create instant WhatsApp chatbot using the official WhatsApp Cloud API.
+Whether you're a Python enthusiast or a Java aficionado, WCE offers two robust engines — **PYWCE** for Python and **JAWCE** for Java — designed to cater to your development preferences without compromising functionality or performance.
 
-A project involving social media chatbot is always an exciting project to do, however creating a chatbot for WhatsApp has its challenges and is time consuming.
-Many common solutions to problems have to be duplicated, along with dealing with overheads such as session.
+## What is WCE?
 
-I developed **JAWCE** to cut development time and deliver (almost) instant, quick, easy chatbots as well as advanced ones by using template.
+It is a unified framework that simplifies the creation of WhatsApp chatbots through a **template-driven approach**.
+It abstracts the complexities of managing chat workflows and integrates seamlessly with developer-defined business logic using **reflective APIs**.
 
-I created it as an `Engine` so that its separate from the actual chatbot logic.
+The framework empowers developers to:
 
-You just focus on the chatbot conversation flow and the business logic - and leave the rest to the engine.
+- **Design Conversational Templates**: YAML-defined templates that map out your chatbot's conversational flow.
+- **Hook Business Logic**: Integrate your custom logic effortlessly using reflective APIs.
+- **Leverage WhatsApp's Cloud API**: Build reliable chatbots with WhatsApp's powerful messaging platform.
 
-Features include:
+Whether you're looking to create a customer service assistant, automate order processing, or build a dynamic chatbot for your business, WCE provides the tools you need to succeed.
 
-- Out-of-the-box session management and implementations
-- [Hooks](/hooks): Extend or add custom functionality by means of hooks.
-- [Templates](/writing-templates): Create template based message flows for your users.
-- [Extendable](/extend): Add as dependency to your Java code and use it coupled with business logic.
+## Why Choose WCE?
 
-Other useful features include:
+### 🚀 **Template-Driven Design**
 
-- Configurable
-- Support for WhatsApp Flows
-- Message debounce to avoid processing repetitive webhook messages
+Define your chatbot's flow using YAML templates, making it easy to visualize and update conversation logic without diving into complex codebases.
 
-## Engine Architecture
-<Image zoom src="/assets/achitecture.png" />
+### ⚙️ **Flexible APIs**
 
-## Should I use JAWCE?
-Maybe not - but it won't hurt to try. Take JAWCE for a spin and let me know your experience.
+Both **PyWCE** and **JaWCE** share a similar API structure, ensuring a seamless transition for developers working across Python and Java.
+
+### 🔗 **Reflective API Integration**
+
+Hook your business logic with minimal configuration. WCE's reflective API maps functions to template hooks dynamically, letting you focus on your application’s core features.
+
+### 🛠 **Cross-Platform Support**
+
+WCE bridges the gap between Python and Java ecosystems, offering:
+
+- **PyWCE**: Optimized for Python developers, leveraging Python's simplicity and rich libraries.
+- **JawCE**: Tailored for Java developers, integrating seamlessly with Java's robust enterprise features.
+
+### 📦 **Modular and Scalable**
+
+Each engine is modular, enabling you to start small and scale effortlessly as your chatbot grows in complexity or user base.
+
+### 💬 **Rich WhatsApp Integration**
+
+Out-of-the-box support for WhatsApp Cloud API features, including text messages, media handling, templates, and interactive elements.
+
+---
+
+## Key Features
+
+- **Easy-to-Use YAML Templates**  
+  Map your chatbot flows, define checkpoints, and create dynamic routes—all in YAML files.
+
+- **Business Logic Hooking**  
+  Link chatbot actions to your custom code functions with a simple dotted path configuration.
+
+- **Interactive Components**  
+  Add buttons, lists, and other interactive elements to your chatbot to enhance user engagement.
+
+- **Developer Tools**
+  - Sandbox mode for testing.
+  - Debugging tools to analyze chat flow and errors.
+
+---
+
+## Who is WCE For?
+
+WCE is for developers and businesses that want to:
+
+- Quickly deploy chatbots without sacrificing flexibility.
+- Leverage a robust framework tailored to WhatsApp interactions.
+- Use their preferred programming language (Python or Java) to build scalable, enterprise-grade solutions.
+
+Whether you're a beginner exploring chatbot development or an expert looking for a reliable engine, WCE has you covered!
+
+---
+
+### Get Started
+
+1. **Choose Your Engine**:
+
+   - For Python: [PyWCE Documentation](https://github.com/DonnC/pywce)
+   - For Java: [JaWCE Documentation](https://github.com/DonnC/jawce)
+
+2. **Explore the APIs**: Both engines share a unified structure for a smooth learning experience.
+
+3. **Build Your First Bot**: Follow the "Getting Started" guide for your chosen engine and start creating amazing WhatsApp bots today!
+
+---
+
+## Join the Community
+
+WCE is not just a framework — it's a community of innovators and developers. Join us to share ideas, get help, and contribute to the future of WhatsApp chatbot development!
+
+---
+
+Build smarter, faster, and better WhatsApp chatbots with WCE. Let's get started! 🚀
