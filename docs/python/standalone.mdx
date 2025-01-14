@@ -1,0 +1,197 @@
+---
+title: WhatsApp Library
+description: Independent whatsapp library
+---
+
+Pywce decouples the engine-processing logic and the core whatsapp module allowing you to use them independently.
+
+In this section, we will show how to use it as `just` another whatsapp client library
+
+<Info>The example below uses Fast Api</Info>
+
+### Import & setup dependencies
+
+To get started, we will import our beloved dependencies and setup a basic fastapi app
+
+```python
+import uvicorn
+from fastapi import FastAPI, Request, Response, Query, Depends
+
+import pywce
+
+app = FastAPI()
+
+wa_config = pywce.WhatsAppConfig(
+    token="<ACCESS-TOKEN>",
+    phone_number_id="<PHONE-NUMBER-ID>",
+    hub_verification_token="<WEBHOOK-VERIFICATION-TOKEN>"
+)
+
+whatsapp = pywce.WhatsApp(whatsapp_config=wa_config)
+```
+
+### Webhook Challenge
+
+To be able to receive notifications (webhooks) when a user chats with your chatbot, Meta requires that you complete & pass their verification challenge.
+
+Pywce comes with `"utility"` package to simplify some of the common tasks when working with WhatsApp Cloud Api
+
+```python
+# ~ as before ~
+
+@app.get("/webhook")
+def verify_webhook(
+        mode: str = Query(...),
+        token: str = Query(...),
+        challenge: str = Query(...)
+) -> Response:
+    """
+    Verify WhatsApp webhook using query parameters.
+
+    :return: HTTP Response with challenge content if verification succeeds, 
+             otherwise "Forbidden"
+    """
+    result = whatsapp.util.verify_webhook_verification_challenge(
+        mode=mode, token=token, challenge=challenge
+    )
+
+    if result is None:
+        return Response(content="Forbidden", status_code=403)
+
+    return Response(content=result, status_code=200)
+```
+
+### Handle Webhook payload
+
+The business logic will be handled by this function - it takes whatsapp webhook data and chunks it in a way that is easier for you to work with.
+
+The engine has utility methods to process some of the repititive tasks like verifying if sent message was a success,
+check if webhook payload is a valid message payload and much more
+
+```python
+# ~ as before ~
+@app.post("/webhook")
+async def process_webhook(request: Request) -> Response:
+    """
+    Handle incoming webhook events from WhatsApp and process them
+    :param request: FastAPI Request object containing the webhook payload
+    :return: HTTP Response with "ACK" content
+    """
+    payload = await request.json()
+    headers = dict(request.headers)
+
+    if whatsapp.util.verify_webhook_payload(payload, headers):
+        if whatsapp.util.is_valid_webhook_message(payload):
+            # returns [WaUser] model
+            _user = whatsapp.util.get_wa_user(payload)
+            logger.info(f"Current whatsapp user: {_user}")
+
+            # returns [ResponseStructure] model
+            response = whatsapp.util.get_response_structure(payload)
+            logger.info(f"Webhook response structure: {response}")
+
+            match response.typ:
+                case pywce.MessageTypeEnum.TEXT:
+                    result = whatsapp.send_message(
+                        recipient_id=_user.wa_id,
+                        message=f"You said: {response.body.get('body')}"
+                    )
+
+                # TODO: implement other types and process them accordingly
+
+                case _:
+                    result = whatsapp.send_message(
+                        recipient_id=_user.wa_id,
+                        message=f"Received whatsapp message type as: {response.typ}"
+                    )
+
+            if whatsapp.util.was_request_successful(_user.wa_id, result):
+                return Response(content="Ack", status_code=200)
+
+    return Response(content="Err", status_code=400)
+```
+
+### Library Models
+
+The engine defines some models you will likely work with more.
+
+The `whatsapp.util.get_wa_user(payload)` call returns a `WaUser` object defined as below
+
+```python
+class WaUser:
+    # default whatsapp account user name
+    name: str = None
+    # whatsapp user mobile number
+    wa_id: str = None
+    # current message id
+    msg_id: str = None
+    timestamp: str = None
+```
+
+The `ResponseStructure` response processes each webhook, determine the message type and its response payload
+
+```python
+class ResponseStructure:
+    body: Any = None
+    typ: MessageTypeEnum = MessageTypeEnum.UNKNOWN
+```
+
+For example, `text` messages usually have a response payload as below (Only showing the critical part)
+
+```json
+"messages": [
+    {
+        "from": "16315551234",
+        "id": "wamid.ABGGFlCGg0cvAgo-sJQh43L5Pe4W",
+        "timestamp": "1603059201",
+        "text": {
+            "body": "Hello this is an answer"
+        },
+        "type": "text"
+    }
+]
+```
+
+The `ResponseStructure` will be as below
+
+```python
+class ResponseStructure:
+    body: Any = {"body": "Hello this is an answer"}
+    typ: MessageTypeEnum = MessageTypeEnum.TEXT
+```
+
+Let's check a image message
+
+```json
+"messages": [
+        {
+            "from": "15226273733",
+            "id": "wamid.8127ygd7d83",
+            "timestamp": "17727273",
+            "type": "image",
+            "image": {
+                "caption": "This is a caption",
+                "mime_type": "image/jpeg",
+                "sha256": "81d3bd8a8db4868c9520ed47186e8b7c5789e61ff79f7f834be6950b808a90d3",
+                "id": "2754859441498128"
+            }
+        }
+]
+```
+
+The `ResponseStructure` will be as below
+
+```python
+class ResponseStructure:
+    body: Any = {
+        "caption": "This is a caption",
+        "mime_type": "image/jpeg",
+        "sha256": "81d3bd8a8db4868c9520ed47186e8b7c5789e61ff79f7f834be6950b808a90d3",
+        "id": "2754859441498128"
+    }
+    typ: MessageTypeEnum = MessageTypeEnum.IMAGE
+```
+
+I hope you get the idea of how the model will be like.
+
+Happy chatbot development 😀

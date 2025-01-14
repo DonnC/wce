@@ -1,1 +1,57 @@
-Coming Soon
+---
+title: Getting Started
+description: Get started with pywce.
+---
+
+<Warning>
+  I assume you have your WhatsApp account and credentials in place
+</Warning>
+
+Pywce is a package for creating WhatsApp chatbots using a template-driven approach.
+It decouples the engine from the WhatsApp client library, allowing developers to use them independently or together.
+
+<Info>
+  You can use pywce as just another WhatsApp client library without relying on the template engine.
+</Info>
+
+### Setup
+
+<Steps>
+    <Step title="Install library" icon="python">
+        Install latest version from pypi
+
+        ```bash
+        $ pip install pywce
+        ```
+
+        or update
+        ```bash
+        $ pip install -U pywce
+        ```
+    </Step>
+    <Step title="Configure settings" icon="gear">
+        If using `fastapi` or `flask` - ensure these libraries are installed
+
+        The default example uses `fastapi`
+
+        ```bash
+        $ pip install fastapi[standard]
+        ```
+
+        Create a whatsapp instance
+
+        ```python
+        import pywce
+
+        wa_config = pywce.WhatsAppConfig(
+            token="<ACCESS-TOKEN>",
+            phone_number_id="<PHONE-NUMBER-ID>",
+            hub_verification_token="<WEBHOOK-VERIFICATION-HUB-TOKEN>"
+        )
+
+        whatsapp = pywce.WhatsApp(whatsapp_config=wa_config)
+        ```
+
+    </Step>
+
+</Steps>

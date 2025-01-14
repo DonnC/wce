@@ -32,12 +32,12 @@
     },
     {
       "id": "pywce",
-      "title": "pywce (Python)",
+      "title": "Pywce",
       "href": "/python"
     },
     {
       "id": "jawce",
-      "title": "jawce (Java)",
+      "title": "Jawce",
       "href": "/java"
     },
     {
@@ -47,6 +47,22 @@
     }
   ],
   "sidebar": [
+    {
+      "group": "Getting Started",
+      "tab": "pywce",
+      "pages": [
+        {
+          "title": "WhatsApp Library",
+          "href": "/python/standalone",
+          "icon": "whatsapp"
+        },
+        {
+          "title": "Pywce Engine",
+          "href": "/python/as-engine",
+          "icon": "python"
+        }
+      ]
+    },
     {
       "group": "Getting Started",
       "tab": "root",
@@ -60,6 +76,11 @@
           "title": "Demo",
           "href": "/common/demo",
           "icon": "snowman"
+        },
+        {
+          "title": "WhatsApp API",
+          "href": "/common/whatsapp-api",
+          "icon": "whatsapp"
         },
         {
           "title": "Getting Started",

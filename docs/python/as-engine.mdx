@@ -1,0 +1,52 @@
+---
+title: WhatsApp ChatBot Engine
+description: Core template engine
+---
+
+The core purpose of the library is to provide a template-driven WhatsApp ChatBot Engine
+
+From now on, we will focus on the engine part of the library
+
+<Info>The example below uses Fast Api
+
+    The previous section setup still applies.
+</Info>
+
+### Engine Setup
+The previous section touches on using pywce as just another WhatsApp Client Library. 
+Much of the setup remains the same, what differs is how the webhook payload is processed, lets dive deep.
+
+### Templates
+Templates are the engine's first-class citizens. They are defined in `.yaml` files and you can store them in any location you prefer
+
+Let's checkout an example conversation flow
+
+```yaml
+"MAIN_MENU":
+  type: button
+  message:
+    body: |
+      Hi, I am WCE 🤖, your ERP System booking assistant.
+
+      What would you like to do today?"
+    buttons:
+      - Book a demo
+      - Help
+  routes:
+    "book a demo": "BOOK_STAGE"
+    "help": "HELP_MENU"
+
+"BOOK_STAGE":
+  type: button
+  message:
+      body: "Start your system demo booking request by clicking the start button"
+      footer: ERP Demo
+      buttons:
+      - Start
+      - Return
+  routes:
+      "start": "START_BOOKING"
+      "return": "MAIN_MENU"
+```
+
+

@@ -1,0 +1,136 @@
+---
+title: WhatsApp Account
+description: Obtaining WhatsApp credentials.
+---
+
+> Checkout the Official guide for the latest info on getting started to [WhatsApp Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api/get-started/).
+
+This guide will help you configure and test your WhatsApp API integration using Meta's **WhatsApp Business Platform**.
+The process will focus on obtaining the following credentials for use in your engine:
+
+1. **Access Token**
+2. **Phone Number ID**
+3. **Webhook Verification Token**
+
+We'll also configure a test environment with a test phone number for development purposes.
+
+---
+
+### **Prerequisites**
+
+1. **Meta Developer Account**:
+
+   - Create an account at [Meta for Developers](https://developers.facebook.com/).
+   - Verify your account by providing valid details (phone number, email, and business info).
+
+2. **WhatsApp Business Account**:
+
+   - A WhatsApp Business Account (WABA) is required. You can create or link one via the Facebook Business Manager.
+
+3. **Test Phone Number**:
+   - Use the test number provided by the WhatsApp Business Platform for development purposes. No real phone number is required for testing.
+
+---
+
+### **Steps**
+
+#### **Step 1: Set Up a WhatsApp App**
+
+1. Go to the [Meta for Developers Dashboard](https://developers.facebook.com/).
+2. Click **"Create App"** and select **Business App** as the type.
+   - **App Name**: Choose a descriptive name for your app.
+   - **Contact Email**: Provide your contact email.
+   - **Business Account**: Select your WABA (or create one if not available).
+3. After creating the app, you'll land on the app's dashboard.
+
+---
+
+#### **Step 2: Access the WhatsApp Business Platform**
+
+1. On the app dashboard, scroll down to the **"Add Products to Your App"** section.
+2. Find **WhatsApp** and click **"Set Up"**.
+3. You'll be redirected to the **WhatsApp Business API** section.
+
+---
+
+#### **Step 3: Obtain a Test Token**
+
+1. In the **Getting Started** section:
+   - A **Temporary Access Token** will be displayed. This is your initial token for testing.
+   - Copy the token and save it securely for later use.
+2. Under the **Phone Numbers** section:
+   - Meta provides a **test phone number** by default. Note down its **Phone Number ID**.
+   - You'll use this ID to send messages.
+
+> **Note**: The temporary token expires after 24 hours. For production, you'll need to generate a permanent token (covered in the "Upgrading to Production" section below).
+
+<Image zoom src="/assets/whatsapp-api.png" />
+
+---
+
+#### **Step 4: Set Up a Webhook URL and Verification Token**
+
+1. In the app dashboard, navigate to **WhatsApp > Configuration**.
+2. Click **"Add Webhook"**.
+3. Provide the following:
+   - **Callback URL**: Your webhook endpoint (e.g., `https://yourdomain.com/webhook`).
+   - **Verification Token**: Create a unique token (`HUB_TOKEN`) (e.g., `your_custom_verification_token`) and save it securely. This will be used to verify your webhook.
+4. Click **"Verify and Save"**. Meta will send a GET request to your webhook with a challenge parameter. Your webhook must respond with the challenge value to complete verification.
+
+## <Image zoom src="/assets/webhook-config.png" />
+
+#### **Step 5: Test Your API**
+
+Meta provides a simple interface to test API calls.
+
+1. In the **"Send and Receive Messages"** section:
+   - Use the **Test Phone Number** to send messages to yourself or other test numbers.
+   - Example API Call (using cURL):
+     ```bash
+     curl -X POST https://graph.facebook.com/v21.0/<PHONE_NUMBER_ID>/messages \
+     -H "Authorization: Bearer <ACCESS_TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "messaging_product": "whatsapp",
+       "to": "<RECIPIENT_PHONE_NUMBER>",
+       "type": "text",
+       "text": { "body": "Hello, this is a test message!" }
+     }'
+     ```
+2. Replace the placeholders (`<PHONE_NUMBER_ID>`, `<ACCESS_TOKEN>`, `<RECIPIENT_PHONE_NUMBER>`) with the values you obtained earlier.
+
+---
+
+### **Key Credentials Overview**
+
+| Credential                     | Purpose                            | Example Value     |
+| ------------------------------ | ---------------------------------- | ----------------- |
+| **Access Token**               | Authenticates API requests         | `EAAJZCzQxyzv...` |
+| **Phone Number ID**            | Identifies the phone number in API | `123456789`       |
+| **Webhook Verification Token** | Verifies webhook authenticity      | `your_hub_token`  |
+
+---
+
+### **Step 6: Upgrading to Production (Optional)**
+
+For production use:
+
+1. **Generate a Permanent Access Token**:
+
+   - In the app dashboard, navigate to **Settings > Basic**.
+   - Click **Generate Token**, select the required permissions, and save the token securely.
+
+2. **Verify Your Business**:
+
+   - Complete the business verification process via the [Facebook Business Manager](https://business.facebook.com/).
+
+3. **Use a Real Phone Number**:
+   - Add a real phone number under the **Phone Numbers** section in the WhatsApp configuration.
+
+---
+
+### **Troubleshooting Tips**
+
+- Ensure your webhook is publicly accessible for Meta to verify and deliver events.
+- Check the [API Reference](https://developers.facebook.com/docs/whatsapp) for additional details on endpoints and payloads.
+- Use Meta's Graph API Explorer for testing API requests interactively.
