@@ -42,13 +42,13 @@
     },
     {
       "id": "session",
-      "title": "Session Management",
+      "title": "Session",
       "href": "/session"
     }
   ],
   "sidebar": [
     {
-      "group": "Getting Started",
+      "group": "Config",
       "tab": "pywce",
       "pages": [
         {
@@ -60,6 +60,17 @@
           "title": "Pywce Engine",
           "href": "/python/as-engine",
           "icon": "python"
+        }
+      ]
+    },
+    {
+      "group": "Config",
+      "tab": "jawce",
+      "pages": [
+        {
+          "title": "Extend",
+          "href": "/java/extend",
+          "icon": "java"
         }
       ]
     },
@@ -83,7 +94,7 @@
           "icon": "whatsapp"
         },
         {
-          "title": "Getting Started",
+          "title": "Setup",
           "href": "/common/getting-started",
           "icon": "star"
         }
