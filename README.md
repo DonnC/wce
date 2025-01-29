@@ -1,11 +1,13 @@
-# Welcome to WCE Documentation  
+# WCE Documentation  
 
-Welcome to **WCE (WhatsApp Chatbot Engine)**, your ultimate solution for building efficient, scalable, and template-driven WhatsApp chatbots. Whether you're a Python enthusiast or a Java aficionado, WCE offers two robust engines—**PyWCE** for Python and **JaWCE** for Java—designed to cater to your development preferences without compromising functionality or performance.  
-
+Welcome to **WCE (WhatsApp Chatbot Engine)**, your ultimate solution for building efficient, scalable, and template-driven WhatsApp chatbots. 
+Whether you're a Python enthusiast or a Java aficionado, WCE offers two robust engines—**PyWCE** for Python and **JaWCE** for Java — 
+designed to cater to your development preferences without compromising functionality or performance.  
 
 
 ## What is WCE?  
-It is a unified framework that simplifies the creation of WhatsApp chatbots through a **template-driven approach**. It abstracts the complexities of managing chat workflows and integrates seamlessly with developer-defined business logic using **reflective APIs**.  
+It is a unified framework that simplifies the creation of WhatsApp chatbots through a **template-driven approach** (Checkout more example templates under [resources](/resources)). 
+It abstracts the complexities of managing chat workflows and integrates seamlessly with developer-defined business logic using **reflective APIs**.  
 
 The framework empowers developers to:  
 - **Design Conversational Templates**: YAML-defined templates that map out your chatbot's conversational flow.  
@@ -72,8 +74,8 @@ Whether you're a beginner exploring chatbot development or an expert looking for
 ### Get Started  
 
 1. **Choose Your Engine**:  
-   - For Python: [PyWCE Documentation](https://docs.page/donnc/wce)  
-   - For Java: [JaWCE Documentation](https://docs.page/donnc/wce)  
+   - For Python: [pywce](https://github.com/DonnC/pywce)  
+   - For Java: [jawce](https://github.com/DonnC/jawce)  
 
 2. **Explore the APIs**: Both engines share a unified structure for a smooth learning experience.  
 

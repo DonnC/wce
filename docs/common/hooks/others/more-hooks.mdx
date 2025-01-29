@@ -2,23 +2,86 @@
 title: More Hook
 description: A lot more on hooks
 ---
+
 In this section, let's quickly go through more hooks
+
 - params
 - router
 - checkpoint
 
-# Params
+
+## Checkpoint
+Save a stage as a last access point: checkpoint.
+
+One use case is to take your users back to their latest previous menu instead of taking them back to the very start menu.
+
+## Ack (Bluetick ✅)
+As it says, it makes you acknowledge reception of a message (bluetick) on WhatsApp
+
+
+## Params
+
 Ever wanted to pass custom static data to your hooks? Use params (like functions parameters / method arguments)
 
-<Info>
-    Params can be applied to any type of message
-</Info>
+<Info>Params can be applied to any type of message</Info>
 
 Let's take a look at an example
+
+<Tabs
+    values={[
+        { label: 'jawce', value: 'jawce' },
+        { label: 'pywce', value: 'pywce' },
+    ]}
+>
+    <TabItem value="jawce">
+    ```yaml
+    100:
+      type: button
+      on-receive: "com.example.jawce.service.AccountHook:processAccountRequest"
+      message:
+        body: "Confirm account type closure?"
+        buttons:
+          - Savings Account
+          - Loan Account
+      params:
+        account-type: Individual
+        currency: ZAR
+      routes:
+        "re:.*": "LOAN_PROCESSOR_STAGE"
+    ```
+
+    In your business logic hook, you can get the passed params as below
+    ```java
+    class AccountHook {
+        private final HookArgs args;
+
+        public AccountHook(HookArgs args) {
+            this.args = args;
+        }
+
+        public Object processAccountRequest() {
+            log.info("Process account args: {}", args);
+
+            // access params
+            var params = args.getMethodArgs();
+
+            if(params.get("currency").equals("ZAR")) {
+                // TODO: handle logic
+            }
+
+            return args;
+        }
+    }
+    ```
+
+    </TabItem>
+
+    <TabItem value="pywce">
+
 ```yaml
 100:
   type: button
-  on-receive: "com.example.jawce.service.AccountHook:processAccountRequest"
+  on-receive: "example.hooks.service.account"
   message:
     body: "Confirm account type closure?"
     buttons:
@@ -32,33 +95,37 @@ Let's take a look at an example
 ```
 
 In your business logic hook, you can get the passed params as below
-```java
-class AccountHook {
-    private final HookArgs args;
 
-    public AccountHook(HookArgs args) {
-        this.args = args;
-    }
+```python
 
-    public Object processAccountRequest() {
-        log.info("Process account args: {}", args);
+@hook
+def account(arg: HookArg) -> HookArg:
+  if args.params.get('currency') == 'ZAR':
+      # TODO: implement business logic
 
-        // access params
-        var params = args.getMethodArgs();
-
-        if(params.get("currency").equals("ZAR")) {
-            // handle logic
-        }
-
-        return args;
-    }
-}
+  return arg
 ```
 
-# Router
+    </TabItem>
+
+</Tabs>
+
+## Router
+
 The only job for this hook is to provide dynamic routing.
 
 Wondering how to dynamically redirect user to a certain stage? Use the router to act as a route decider switch.
+
+
+
+<Tabs
+    values={[
+        { label: 'pywce', value: 'pywce' },
+        { label: 'jawce', value: 'jawce' },
+    ]}
+>
+    <TabItem value="jawce">
+   
 
 ```yaml
 100:
@@ -76,11 +143,12 @@ Wondering how to dynamically redirect user to a certain stage? Use the router to
 ```
 
 <Info>
-        `EngineConstants.REST_HOOK_DYNAMIC_ROUTE_KEY` is an internal engine constant used to set the next dynamic route
+  `EngineConstants.REST_HOOK_DYNAMIC_ROUTE_KEY` is an internal engine constant
+  used to set the next dynamic route
 </Info>
 
-
 In your business logic hook, you can redirect user to another route like below
+
 ```java
 class AccountHook {
     private final HookArgs args;
@@ -92,18 +160,15 @@ class AccountHook {
     public Object routeSwitcher() {
         log.info("Route switcher args: {}", args);
 
-        // access params
         var params = args.getMethodArgs();
 
         if(params.get("currency").equals("ZAR")) {
             args.setAdditionalData(
                     Map.of(
                             EngineConstants.REST_HOOK_DYNAMIC_ROUTE_KEY,
-                            "REQUEST_ZAR_ACC_DETAILS_STAGE"  // redirect to route
+                            "REQUEST_ZAR_ACC_DETAILS_STAGE"
                     )
             );
-
-            return args;
         }
 
         return args;
@@ -111,10 +176,42 @@ class AccountHook {
 }
 ```
 
-# Checkpoint
-Save a stage as a last access point: checkpoint.
+    </TabItem>
 
-One use case is to take your users back to their latest previous menu instead of taking them back to the very start menu.
+    <TabItem value="pywce">
 
-# Ack (Bluetick ✅)
-As it says, it makes you acknowledge reception of a message (bluetick) on WhatsApp
+```yaml
+100:
+  type: button
+  on-receive: "example.hooks.service.account_route_switch"
+  message:
+    body: "Confirm account type closure?"
+    buttons:
+      - Savings Account
+      - Loan Account
+  params:
+    account-type: Individual
+    currency: ZAR
+  routes:
+    "re:.*": "LOAN_PROCESSOR_STAGE"
+```
+
+In your business logic hook, you can do your decision making and redirect user like below
+
+```python
+@hook
+def account_route_switch(arg: HookArg) -> HookArg:
+  # if params currency is ZAR, then
+  # dynamically redirect user template stage
+  # for collecting zar account details
+
+  if args.params.get('currency') == 'ZAR':
+      next_route = {EngineConstants.DYNAMIC_ROUTE_KEY: "REQUEST_ZAR_ACC_DETAILS_STAGE"}
+      arg.additional_data = next_route
+
+  return arg
+```
+
+    </TabItem>
+
+</Tabs>

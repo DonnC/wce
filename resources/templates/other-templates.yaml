@@ -58,5 +58,5 @@
   type: request-location
   message: "Share your location with us"
   routes:
-    "location_request": "START-MENU"
+    "re:.*": "START-MENU"
 
