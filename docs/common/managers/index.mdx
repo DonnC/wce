@@ -1,0 +1,35 @@
+---
+title: Engine Managers
+description: Configurable engine managers
+---
+
+To give more power to the developer, the engine do not assume or force what to use.
+
+The engine has default manager implementations which are:
+1. Session manager  -> implements ISessionManager
+2. Storage Manager  -> implements IStorageManager
+3. Logger           -> implements PywceLogger
+
+## Session Manager
+As the name suggests, this handles all chatbot session or cache. The instance is available on HookArg object which you can access in any hook.
+
+You can manage each user specific data any way you want.
+
+> Learn more about hooks in the [Hooks Section](/common/hooks/introduction)
+
+## Storage Manager
+This handles all chatbot template stages or conversational flow. The engine only understands `EngineTemplate` model.
+
+This gives you ability to store or retrieve conversational flow in any format or source e.g database, json, api.
+It is only required that you transform your data into the `EngineTemplate` model for the needed template stage.
+
+<Info>
+    `EngineTemplate` is nothing more than a json object serialization of the support YAML templates
+</Info>
+
+## Logger
+Mainly used in `python` environment to define a custom logger for internal engine logs during debugging.
+
+---
+
+Let's look at the common managers

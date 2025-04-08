@@ -1,0 +1,37 @@
+---
+title: WhatsApp chatbots with Frappe
+description: Get started with frappe-pywce.
+---
+
+<Warning>
+ Make sure to read [core section](/) before proceeding
+</Warning>
+
+Frappe-pywce is a custom frappe app for creating WhatsApp chatbots using a ~~template-driven~~ doctype-driven approach.
+It rides on top of `pywce` so make sure you understand that first.
+
+<Info>
+  Using pywce in frappe opens up all the great features Frappe / ERPNext offers to your chatbots.
+</Info>
+
+### Setup
+
+<Steps>
+    <Step title="Install the app" icon="python">
+        Install latest version from vcs
+
+        ```bash
+        $ bench get-app --branch main frappe_pywce https://github.com/DonnC/frappe_pywce.git
+
+        # install on site
+        $ bench --site `site-name` install-app frappe_pywce
+        ```
+    </Step>
+    <Step title="Configure app settings" icon="gear">
+       
+       <Warning>
+        Coming soon
+       </Warning>
+
+    </Step>
+</Steps>

@@ -10,38 +10,21 @@ This type makes collecting user information a breeze and greatly improves your c
 **WCE** has out-of-the box support for flows. An example flow template will be as below
 
 ```yaml
-"STAGE_NAME":
-  type: flow
+"CURRENT-STAGE-NAME":
+  kind: flow
   message:
-    id: flow-id
+    flow-id: flow-id
+    draft: true
     name: flow-name
-    title: "My Flow Title"
-    body: "Flow message body"
-    button: flow-btn
+    title: Flow Title
+    body: Flow message body
+    button: flow-cta-button
   routes:
     "re:.*": "NEXT_STAGE"
 ```
 
-WCE tries to keep template signature similar, a flow template can have a `title`, `body` and or `footer`
-like any other interactive message template.
+WCE tries to keep template signature similar, a flow template can have a `title`, `body` and or `footer` like any other interactive message template.
 
-### Draft Flows
-
-During testing, you may have a draft flow. It's easy to include a draft flow in wce templates, simply add a `draft` attr
-
-```yaml
-"STAGE_NAME":
-  type: flow
-  message:
-    id: flow-id
-    draft: true # signal that flow is in draft mode
-    name: flow-name
-    title: "My Flow Title"
-    body: "Flow message body"
-    button: flow-btn
-  routes:
-    "re:.*": "NEXT_STAGE"
-```
 
 ### Dynamic properties - Passing initial data
 
@@ -50,17 +33,15 @@ During testing, you may have a draft flow. It's easy to include a draft flow in 
 You may have a flow that requires initial values ([Dynamic Properties](https://developers.facebook.com/docs/whatsapp/flows/reference/flowjson#dynamic-properties)).
 Use cases for this can be if you have a flow that takes in initial dropdown items or just to populate a field with a default value.
 
-The template `"template"` hook can be used for this, instead of returning a render payload, it also takes in additional_data field that can be used for this.
-
-<Info>Same approach also works same for `pywce` template</Info>
+The template `"template"` hook can be used for this.
 
 ```yaml
 "STAGE-NAME":
-  type: flow
-  # jawce template
-  template: "zw.co.dcl.jchatbot.hooks.AuthHook:registerTemplate"
+  kind: flow
+  template: "example.hooks.flows.get_register_defaults"
+  on-receive: "example.hooks.flows.register"
   message:
-    id: 1234567890
+    flow-id: 1234567890
     draft: true
     name: SCR_REGISTER
     title: "New Account"
@@ -72,78 +53,56 @@ The template `"template"` hook can be used for this, instead of returning a rend
 
 You have to define a template as below
 
-```java
-// zw.co.dcl.jchatbot.hooks.AuthHook.java
+```python
+# example/hooks/flows.py
+from pywce import HookArg, TemplateDynamicBody
 
-public class AuthHook extends AbstractHook {
-    public AuthHook(HookArgs args) {
-        super(args, SessionLocator.getSessionManager());
-    }
+def get_register_defaults(arg: HookArg) -> HookArg:
+  # flow requires `msisdn` field, lets set this to current user wa_id as default value
 
-    /*
-      Take current user mobile number and set it as default msisdn
-    */
-    public Object registerTemplate() {
-        // match keys as set in your flow
-        Map<String, Object> flowDynamicProps = Map.of(
-                "msisdn", this.args.getChannelUser().waId()
-        );
+  flow_defaults = {"msisdn": arg.user.wa_id}
 
-        // note that render-payload is set to null
-        args.setTemplateDynamicBody(new TemplateDynamicBody(
-                WebhookResponseMessageType.INTERACTIVE,
-                flowDynamicProps,
-                null
-        ));
+  arg.template_body = TemplateDynamicBody(initial_flow_payload=flow_defaults)
 
-        return args;
-    }
-}
-
+  return arg
 ```
 
-## Flow Response
+### Flow Response
 
-When user fills your flow form, the engine returns this in the `additional data` property of the hook model
+When user fills your flow form, the engine returns this in the `additional_data` property of the hook model
 
 A (python) hook model is as below.
 
-<Info>
-  You will learn more on Hooks in the next section
-  </Info>
+> Learn more about hooks in the [Hooks Section](/common/hooks/introduction)
+
   
 ```python
     @dataclass
     class HookArg:
-        user: WaUser
-        params: Dict[str, Any] = field(default_factory=dict)
-        template_body: TemplateDynamicBody = None
-        from_trigger: bool = False
-        user_input: str = None
+        # ...
         flow: str = None
         additional_data: Dict[str, Any] = None  # <=== Will contain flow response data
-        session_manager: ISessionManager = None
 ```
 
-Example `on-receive` hook to process flow response (assume a template has a hook defined below)
+Example `on-receive` hook to process flow response.
 
 ```python
-# ecommerce.hooks.auth_service.py
+# example/hooks.flows.py
 
 from pywce import HookArg
+from .services import UserService
 
-def login(arg: HookArg) -> HookArg:
+def register(arg: HookArg) -> HookArg:
   """
-  Process flow response data -
-  Take user msisdn field and pin field and attempt login
+  Register user from data obtained from WhatsApp Flow
   """
   print(f"Received hook arg: {arg}")
 
   flow_auth_data = arg.additional_data
 
-  # TODO: attempt auth business logic
-  result = LoginService.login(
-    username=flow_auth_data.get('msisdn'),
+  result = UserService.register(
+    msisdn=flow_auth_data.get('msisdn'),
+    email=flow_auth_data.get('email'),
     password=flow_auth_data.get('pin')
   )
 

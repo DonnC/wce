@@ -1,71 +1,121 @@
 ---
-title: Introduction
+title: Business Logic 🚀
 description: Supercharge your template
 ---
 
 Hooks supercharge the **WCE** engines. It makes it possible to hook custom, additional functionality during message processing.
 
-You want to send a Slack notification when user confirms their order? Add a hook.
-
-How about to dynamically populate a message with some dynamic variables? Add a hook!
-
-# How hooks are processed
-
-1. Imagine user starts your chatbot for the first time.
-2. The engine checks for the current stage in the session (no stages found at this stage), and takes the start menu that you configure.
-3. It evaluates this current template hooks and processes all `PRE-HOOK`s on it.
-4. It processes & renders the template and send to user. (a lot more happens under the hood)
-5. When a user respond to that message via WhatsApp, the engine lookup the template in the session (it's likely our first template saved in session)
-6. The engine marks this as current template and processes all `POST-HOOKS` on it
-
-The process repeats on and on 🔁
-
-There a number of supported hooks that you can define in your template.
-
-Below are some of the "hooks" and the other "fields" you can define in your template
-
-- type - the type of message to render
-- prop
-- on-receive
-- on-generate
-- validator
-- middleware
-- template
-- params
-- message
-- routes
-  and much more
-
-You can probably guess what other hooks do by their names.
-
-Hooks are categorized into `POST` or `PRE` hooks
-
-## Pre Hooks
-
-These are processed **BEFORE** the message is rendered and send to the user on WhatsApp.
-
-> In the order which they are processed
-
-These include
-
-- params
-- template
-- on-generate
-
-## Post Hooks
-
-These hooks are processed **AFTER** the user responds to a message.
-
-> In the order which they are processed
-
-- params
-- validator
-- on-receive
-- middleware
-- prop
+All chatbot business logic is defined in the corresponding hook.
 
 ## Hooks processing
+Hooks that uses dotted path are processed using reflection API
+> Learn more about [Java Reflection](https://docs.oracle.com/javase/tutorial/reflect/)
 
-Hooks are processing \*reflectively (using Reflection API) (`more on this later`)
+> Learn more about [Python Reflection](https://gamedevacademy.org/python-reflection-tutorial-complete-guide/)
 
-Let's look into this more in the next section
+These are normal functions / methods that you define. Any hook must take a single argument **HookArg** object.
+
+<Info>
+    Session manager attribute gives you access to the engine session instance.
+
+    Learn more about session manager methods [here](/common/managers/session)
+</Info>
+
+## Hook model
+<Accordion title="View hook model object">
+<CodeGroup title="Hook Model: HookArg">
+    ```python
+    @dataclass
+    class WaUser:
+        """
+          takes default whatsapp user information
+
+          :var name: default whatsapp user name
+          :var wa_id: user mobile number
+        """
+        name: str
+        wa_id: str
+        msg_id: str
+        timestamp: str
+
+    @dataclass
+    class TemplateDynamicBody:
+        dynamic_template: Optional[EngineTemplate]
+        initial_flow_payload: Optional[Dict[Any, Any]]
+        render_template_payload: Optional[Dict[str, Any]]
+
+
+    # main model
+    @dataclass
+    class HookArg:
+        user: WaUser
+        session_id: str
+        user_input: Optional[Any]
+        session_manager: Optional[ISessionManager]
+        template_body: Optional[TemplateDynamicBody]
+        from_trigger: bool = False
+        flow: Optional[str]
+        additional_data: Optional[Dict[str, Any]]
+        params: Dict[Any, Any] = field(default_factory=dict)
+        hook: Optional[str]
+    ```
+
+
+    ```java
+    public record WaCurrentUser(
+        String name,        // default user display name
+        String waId,        // mobile number
+        String msgId,
+        Long timestamp
+        ) {}
+
+    public record TemplateDynamicBody(
+        WebhookResponseMessageType type,        // for dynamic template message type
+        Map<String, Object> payload,            // used for `flow` type - initial flow data
+        Map<String, Object> renderPayload       // dynamic template data
+        ) {}
+
+    // main model
+    public class HookArgs {
+        private WaCurrentUser channelUser;
+        private String userInput;                           // user input from whatsapp
+        private String flow;                                // flow name for flow template type
+        private Map<String, Object> additionalData;         // mainly for dynamic routing
+        private TemplateDynamicBody templateDynamicBody;    // for templates, dynamic and flow messages
+        private Map<String, Object> methodArgs;             // provided static params defined on template
+    }
+    ```
+</CodeGroup>
+</Accordion>
+
+<Info>
+  The Hook model contains all the necessary data you can use in your business logic
+</Info>
+
+Hooks are classified as `PRE` & `POST` hooks - it can be processed before a message is sent to user or processed after a message is received from a user.
+
+Hooks are normal functions or method, you will learn more under hooks section.
+
+#### Supported hooks
+**POST**
+- `on-receive` processed after a message is received from a user. Main point of business logic after user sends a message. 
+Use cases include: send email after user confirms order, process an order, validate user input etc.
+- `middleware` processed after `on-receive` is processed. Meant for any business logic processed mid-flight 
+- `router` is processed last and it by-pass the `routes` defined on the template. Its used to dynamically compute the next stage to go to (redirecting).
+
+**PRE**
+- `template` used for dynamically populating a dynamic data on the template.
+Use cases: dynamically populate a button template, button label or template text 
+- `on-generate` processed after `template` hook is processed. Meant for any business logic processed mid-flight before a message is shown to user
+
+Let's look at each hook and how its business logic is defined.
+
+<Info>
+    **JAWCE** also supports `RESTFul` based hooks.
+    Only JAWCE supports both reflective and restful based hooks
+</Info>
+
+<Info>
+    **frappe-pywce** also supports `script` based hooks with limited support.
+    These have a similar approach to Frappe API Server Scripts.
+</Info>

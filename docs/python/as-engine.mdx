@@ -5,26 +5,51 @@ description: Core template engine
 
 The core purpose of the library is to provide a template-driven WhatsApp ChatBot Engine
 
-From now on, we will focus on the engine part of the library
+## Setup
+Let's checkout an example conversation flow using YAML files
 
-<Info>
-  The example below uses Fast Api
+Your typical folder structure might be
 
-  The previous section setup still applies.
-</Info>
+```plain
+chatbot-project-name/  
+│  
+├── .env 
+├── .gitignore
+├── config.py
+├── main.py             # FastAPI entry point  
+├── requirements.txt
+│  
+├── templates/          # YAML template files  
+│   ├── template1.yaml  
+│   ├── template2.yaml  
+│   └── ...  
+│  
+├── triggers/           # Trigger-related YAML  
+│   └── trigger.yaml  
+│  
+└── services/
+│  
+└── hooks/
+|
+└── venv/
+```
 
-### Engine Setup
-The previous section touches on using pywce as just another WhatsApp Client Library. 
-Much of the setup remains the same, what differs is how the webhook payload is processed, lets dive deep.
+Typical `.env` configs
+```env
+  # as before
+
+  START_STAGE=MAIN_MENU
+  TEMPLATES_DIR=templates
+  TRIGGERS_DIR=triggers
+```
 
 ### Templates
-Templates are the engine's first-class citizens. They are defined in `.yaml` files and you can store them in any location you prefer
-
-Let's checkout an example conversation flow
+Templates are the engine's first-class citizens. They are defined in any format or storage you prefer  (`yaml` and or `json` are supported by default) and you can store them in any location you prefer
 
 ```yaml
+# template1.yaml
 "MAIN_MENU":
-  type: button
+  kind: button
   message:
     body: |
       Hi, I am WCE 🤖, your ERP System booking assistant.
@@ -38,7 +63,7 @@ Let's checkout an example conversation flow
     "help": "HELP_MENU"
 
 "BOOK_STAGE":
-  type: button
+  kind: button
   message:
       body: "Start your system demo booking request by clicking the start button"
       footer: ERP Demo
@@ -48,6 +73,43 @@ Let's checkout an example conversation flow
   routes:
       "start": "START_BOOKING"
       "return": "MAIN_MENU"
+
+# .. more templates
 ```
 
+<Info>
+  Internally, the engine understand `EngineTemplate` model.
 
+   If you define your own `IStorageManager` you need to make sure you map your template data into this model class 
+</Info>
+
+
+### Webhook Handler
+I prefer processing webhook data in background using Fastapi background tasks. You can use a similar approach for your framework or implementation.
+
+
+```python
+# ~imports
+from .config import whatsapp, engine
+
+# ... same as before in Standalone section
+
+async def task(payload: dict, headers: dict) -> None:
+    await engine.process_webhook(webhook_data=payload, webhook_headers=headers)
+
+@app.post("/chatbot/webhook")
+async def handler(request: Request, background_tasks: BackgroundTasks):
+    """Handle incoming webhook events from WhatsApp and process them in the background."""
+    payload_bytes = await request.body()
+    payload = whatsapp.util.bytes_to_dict(payload_bytes)
+
+    # Add processing task to background
+    background_tasks.add_task(task, payload, dict(request.headers))
+
+    # quickly return response to WhatsApp to avoid retries
+    return "ack"
+```
+
+This is all that is needed to setup your chatbot with pywce. Remember, chatbot business logic is found in your template hooks.
+
+Happy chatbot development 🙂🤖

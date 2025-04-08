@@ -1,9 +1,9 @@
 ---
 title: Template Messages
-description: Render different message types to the user
+description: Render different message kinds to user
 ---
 
-The message field is a required field in a template. The rendered message on WhatsApp depends on the template `type`
+The message field is a required field in a template. The rendered message on WhatsApp depends on the template `kind`
 
 The engine supports the following types
 - text
@@ -12,21 +12,22 @@ The engine supports the following types
 - flow
 - dynamic
 - location
-and more
+- media
+- location-request
+- cta
 
-Let's look at the most common ones
+Let's look at these in detail
 
 ## TEXT
 The general message type, this shows a generic text message.
 ```yaml
 2000:
-  type: text
+  kind: text
   message: "Type *yes* to proceed to the next stage. Else type *no*"
   routes:
     "yes": 3000
     "no": 404
 ```
-
 
 ## BUTTON
 Shows a button to the user. The buttons should **NOT** exceed 3 button options. The button name will be
@@ -34,7 +35,7 @@ the button id. You can use the button name in the `routes` field to match the cl
 
 ```yaml
 "BOOK_STAGE":
-  type: button
+  kind: button
   message:
     title: Book Demo
     body: "Great, begin your booking request by clicking the start button"
@@ -51,36 +52,34 @@ the button id. You can use the button name in the `routes` field to match the cl
 
 ## LIST
 This gives a user a list of options to select from. The list can have section titles to divide your list items. Note that a list 
-should have at most **10 items**. Each list item will be matched by its item id in the `routes` field. The `description` is optional.
+should have at most **10 items**. Each list item will be matched by its item `id` in the `routes`.
 
 ```yaml
 1000:
-  type: list
+  kind: list
   message:
     title: "System"
     body: "Great choice, select your ERP of choice from the options below"
     button: "Select ERP"
     sections:
       "ERP Systems":        # <- section title
-        0:                  # <- items (rows) under that section
+        "0":                  # <- items (rows) under that section
           title: ERPNext
           description: A versatile, open-source ERP
-        1:
+        "1":
           title: Odoo
           description: A versatile open-source system for a medium organization
-        2:
+        "2":
           title: SAP
           description: A commercial ERP for medium-large organization
         "other":
           title: Other
   routes:
-    0: 2000
-    1: 3000
-    2: 4000
+    "0": 2000
+    "1": 3000
+    "2": 4000
     "other": 5000
 ```
-
-Each id will be used to match the `route` and the next stage to go to.
 
 ### Result
 <Image zoom src="/assets/list.png" />

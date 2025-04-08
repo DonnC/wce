@@ -7,6 +7,8 @@ description: Your ultimate solution for building efficient, scalable, and templa
 
 Whether you're a Python enthusiast or a Java aficionado, WCE offers two robust engines — **PYWCE** for Python and **JAWCE** for Java — designed to cater to your development preferences without compromising functionality or performance.
 
+> Also supports frappe framework: **frappe-pywce** - for the Frappe / ERPNext developers.
+
 ## What is WCE?
 
 It is a unified framework that simplifies the creation of WhatsApp chatbots through a **template-driven approach**.
@@ -24,7 +26,7 @@ Whether you're looking to create a customer service assistant, automate order pr
 
 ### 🚀 **Template-Driven Design**
 
-Define your chatbot's flow using YAML templates, making it easy to visualize and update conversation logic without diving into complex codebases.
+Define your chatbot's flow using templates (YAML templates supported by default), making it easy to visualize and update conversation logic without diving into complex codebases.
 
 ### ⚙️ **Flexible APIs**
 
@@ -39,6 +41,7 @@ Hook your business logic with minimal configuration. WCE's reflective API maps f
 WCE bridges the gap between Python and Java ecosystems, offering:
 
 - **PyWCE**: Optimized for Python developers, leveraging Python's simplicity and rich libraries.
+- **frappe-pywce**: Powered by [**pywce@sync**](https://github.com/DonnC/pywce/tree/sync), for frappe / erpnext developers leveraging the frappe framework.
 - **JawCE**: Tailored for Java developers, integrating seamlessly with Java's robust enterprise features.
 
 ### 📦 **Modular and Scalable**
@@ -47,14 +50,14 @@ Each engine is modular, enabling you to start small and scale effortlessly as yo
 
 ### 💬 **Rich WhatsApp Integration**
 
-Out-of-the-box support for WhatsApp Cloud API features, including text messages, media handling, templates, and interactive elements.
+Out-of-the-box support for **all** WhatsApp Cloud API features, including text messages, media handling, templates, and interactive elements.
 
 ---
 
 ## Key Features
 
-- **Easy-to-Use YAML Templates**  
-  Map your chatbot flows, define checkpoints, and create dynamic routes—all in YAML files.
+- **Easy-to-Use Templates**  
+  Map your chatbot flows, define checkpoints, and create dynamic routes—all in any format (default to YAML) files.
 
 - **Business Logic Hooking**  
   Link chatbot actions to your custom code functions with a simple dotted path configuration.
@@ -85,6 +88,7 @@ Whether you're a beginner exploring chatbot development or an expert looking for
 1. **Choose Your Engine**:
 
    - For Python: [pywce](https://github.com/DonnC/pywce)
+   - For Frappe / ERPNext: [frappe-pywce](https://github.com/DonnC/frappe-pywce)
    - For Java: [jawce](https://github.com/DonnC/jawce)
 
 2. **Explore the APIs**: Both engines share a unified structure for a smooth learning experience.

@@ -1,15 +1,13 @@
 ---
-title: Getting Started
+title: WhatsApp chatbots with python
 description: Get started with pywce.
 ---
 
-<Info>Checkout [pywce](https://github.com/DonnC/pywce) on GitHub</Info>
-
 <Warning>
-  I assume you have your WhatsApp account and credentials in place
+ Make sure to read [core section](/) before proceeding
 </Warning>
 
-Pywce is a package for creating WhatsApp chatbots using a template-driven approach.
+Pywce is a library for creating WhatsApp chatbots using a template-driven approach.
 It decouples the engine from the WhatsApp client library, allowing developers to use them independently or together.
 
 <Info>
@@ -21,40 +19,72 @@ It decouples the engine from the WhatsApp client library, allowing developers to
 
 <Steps>
     <Step title="Install library" icon="python">
-        Install latest version from pypi
+        Install latest version from vcs
 
         ```bash
-        $ pip install pywce
+        # async version, using await
+        $ pip install git+https://github.com/DonnC/pywce.git@async
         ```
 
-        or update
         ```bash
-        $ pip install -U pywce
+        # sync version
+        $ pip install git+https://github.com/DonnC/pywce.git@sync
         ```
     </Step>
-    <Step title="Configure settings" icon="gear">
-        If using `fastapi` or `flask` - ensure these libraries are installed
+    <Step title="Setup config keys" icon="gear">
+        Safely store your WhatsApp account config keys in a safe `.env` file for best practise
 
-        The default example uses `fastapi`
+        ```env
+          ACCESS_TOKEN=your-whatsapp-access-token
+          PHONE_NUMBER_ID=your-phone-id
+          APP_SECRET=your-dev-app-secret
+          WEBHOOK_HUB_TOKEN=your-preffered-webhook-token
+
+          START_STAGE=your-selected-initial-template-stage
+
+          # optional, used if using file based template source e.g YAML or JSON
+          TEMPLATES_DIR=folder-with-template-files
+          TRIGGERS_DIR=your-trigger-folder
+        ```
+
+    </Step>
+    <Step title="Configure engine settings" icon="gear">
+        Examples given will be using FastApi, but any framework will do
 
         ```bash
         $ pip install fastapi[standard]
         ```
 
-        Create a whatsapp instance
+        Create client & engine instance
 
         ```python
-        import pywce
+        # config.py
+        import os
+        from dotenv import load_dotenv
 
-        wa_config = pywce.WhatsAppConfig(
-            token="<ACCESS-TOKEN>",
-            phone_number_id="<PHONE-NUMBER-ID>",
-            hub_verification_token="<WEBHOOK-VERIFICATION-HUB-TOKEN>"
+        from pywce import Engine, client, storage, EngineConfig
+
+        load_dotenv()
+
+        yaml_template_storage = storage.YamlStorageManager(os.getenv("TEMPLATES_DIR"), os.getenv("TRIGGERS_DIR"))
+
+        _wa_config = client.WhatsAppConfig(
+            token=os.getenv("ACCESS_TOKEN"),
+            phone_number_id=os.getenv("PHONE_NUMBER_ID"),
+            hub_verification_token=os.getenv("WEBHOOK_HUB_TOKEN"),
+            app_secret=os.getenv("APP_SECRET")
         )
 
-        whatsapp = pywce.WhatsApp(whatsapp_config=wa_config)
+        whatsapp = client.WhatsApp(_wa_config)
+
+        _eng_config = EngineConfig(
+            whatsapp=whatsapp,
+            storage_manager=yaml_template_storage,
+            start_template_stage=os.getenv("START_STAGE")
+        )
+
+        engine = Engine(config=_eng_config)
         ```
 
     </Step>
-
 </Steps>

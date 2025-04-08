@@ -1,0 +1,94 @@
+---
+title: Chatbot Session
+description: session / cache management
+---
+
+The session manager handles only 1 task: to manage (save, retrieve, delete) user and engine abitrary data
+
+It stores engine data which keeps track of where the user is in your conversational flows as well as your user defined data.
+
+<Info>
+    WCE comes with default `SessionManager` implementations out-of-the-box
+
+    `session_id` is the current message's user whatsapp number
+</Info>
+
+## Pywce Default implementation
+- Dict based session manager
+
+## Frappe-pywce Default implementation
+- Redis based session manager
+
+## Jawce Default implementations
+- FileBasedSessionManager
+- CaffeineSessionManager
+- HazelcastSessionManager
+- LMDBSessionManager
+
+You can use any of the default implementations or switch any of them at any time.
+
+> You are likely to use this manager more in your hooks (business logic)
+
+## Session methods
+All session managers implements a single `ISessionManager` interface.
+You must implement this class for your own session management logic.
+
+See a Java interface representation of ISessionManager below. 
+`This is the same class or Python abstract class signature too`
+
+
+<Info>
+    `ISessionManager.session(<sessionId>)` must return a ISessionManager instance.
+
+    Nomatter how many times it is called, it should return the session object of the passed session-id
+</Info>
+
+
+```java
+public interface ISessionManager {
+    ISessionManager session(String sessionId);
+
+    void save(String sessionId, String key, Object data);
+
+    Object get(String sessionId, String key);
+
+    // get all user data
+    // Dict[str, Any] fetch_all(session_id: str)
+    Map<String, Object> fetchAll(String sessionId);
+
+    // remove data by key
+    void evict(String sessionId, String key);
+
+    void clear(String sessionId);
+
+    // save non-user-specific related data - accessible to all users
+    void saveGlobal(String key, Object data);
+
+    void evictGlobal(String key);
+
+    // clear all user data except keys in > retain array
+    void clear(String sessionId, List<String> retain);
+
+    // remove prop data by key
+    boolean evictProp(String sessionId, String propKey);
+
+    Object getFromProps(String sessionId, String propKey);
+
+    Map<String, Object> getUserProps(String sessionId);
+
+    void saveProp(String sessionId, String key, Object data);
+
+    // ---  utility methods
+    <T> T get(String sessionId, String key, Class<T> type);
+
+    <T> T getGlobal(String key, Class<T> type);
+
+    <T> T getFromProps(String sessionId, String propKey, Class<T> propType);
+}
+```
+
+<Info>
+    In your hooks - you can access session manager via HookModel's `.session_manager(<session_id>)` attribute
+
+    HookModel also contains `.session_id` field for each access 
+</Info>

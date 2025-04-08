@@ -3,46 +3,16 @@ title: Templates
 description: ChatBot conversation flows
 ---
 
-Templates are the building blocks of WCE. They define the brains, conversation flow which the bot respond to the user.
+They are the building blocks of WCE. They define the brains, conversation flow which the bot respond to the user.
+Templates are predictable, are defined in "STAGES" or "STEPS" or "FLOW" whatever you want to call it, to make it easy to know where to go from 1 conversation to another based on user responses.
 
-The engine uses 2 important folders which are the `templates` folder and a `triggers` folder.
+Template sources can be anything, yaml, json or database or anything.
 
-Let's look at the contents of these folders in detail
-
-<Info>
-    WCE files are all `*.yaml` files
-</Info>
-
-## Triggers
-
-Most chatbots have a start word(s) or just a keyword that can trigger a certain flow to kick in. 
-For example, most chatbots respond when you say `hie` or `start` or something similar. These are the
-`triggers` in WCE context. They not only work for "greeting" but are very powerful features that can boost your bot intelligence and UX.
-
-Triggers are global, and they are evaluated first before any stages that you define in your `templates` folder.
-
-For example. Consider a trigger defined as below
-```yaml
-"MAIN_MENU": "re:^start$"
-```
-
-The trigger above mean that, whenever user types `start` -  render the **MAIN_MENU** template to the user
-
-To define `regex` triggers, always prefix them with `re:` Learn more under [Hooks](/common/hooks) section.
-
-It's advised to have your triggers as exact regex to avoid unexpected responses 😕.
-
-## Templates
-
-This folder houses all your chatbot conversation flows.
-Templates are predictable, are defined in "STAGES" or "STEPS" or "FLOW" whatever you want to call it, to make it easy to know where to go from 1 conversation to another.
-
-There are a couple of `hooks` you can define on your template - will cover hooks in the next section.
-These hooks will extend the functionality of your template as you desire.
+By default the engine comes with YAML based templates support.
 
 There are different message types in WhatsApp [Message Types](https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-messages).
 
-The engine supports a number of these official message types with the common ones being:
+The engine supports a number of these official message types, as template kinds, with the common ones being:
 - text
 - button
 - list
@@ -51,4 +21,49 @@ The engine supports a number of these official message types with the common one
 
 The engine can also handle dynamic and location message types
 
-Let's look at examples
+#### Examples
+Consider an example template flow below
+```yaml
+    "MAIN_MENU":
+        kind: text
+        message: "Hie there, type anything to start your booking journey"
+        routes:
+            "re:.*": "100"
+
+    "100":
+        kind: button
+        message:
+            body: "Hie there,\nStart your system demo booking request by clicking the start button"
+            footer: ERP Demo
+            buttons:
+            - Start
+            - Return
+        routes:
+            "start": "1000"
+            "return": "MAIN_MENU"
+
+    "1000":
+        kind: button
+        prop: erp_choice
+        message:
+            body: "Great choice, select your ERP of choice"
+            buttons:
+                - ERPNext
+                - SAP
+                - Odoo
+        routes:
+            "re:.*": "2000"
+
+    "2000":
+        kind: text
+        prop: booking_date
+        message: |
+            Kindly provide your preferred demo date and time in 24hr format
+            Format: _DD/MM/YYYY HH:MM_ e.g *23/05/2024 10:00*
+        routes:
+            "re://d{1,2}//d{2}//d{4}": "3000"
+```
+
+All templates have common fields with the exception of the `message` field which depends on the template `kind` or type.
+
+We will cover all the different template fields in the next section.

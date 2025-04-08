@@ -13,21 +13,21 @@ In this section, we will show how to use it as `just` another whatsapp client li
 
 To get started, we will import our beloved dependencies and setup a basic fastapi app
 
+<Warning>
+    From the `config.py` we created in the [last section](/python/inde), we will only use the `whatsapp` instance
+</Warning>
+
 ```python
 import uvicorn
 from fastapi import FastAPI, Request, Response, Query, Depends
 
 import pywce
 
+from .config import whatsapp
+
 app = FastAPI()
 
-wa_config = pywce.WhatsAppConfig(
-    token="<ACCESS-TOKEN>",
-    phone_number_id="<PHONE-NUMBER-ID>",
-    hub_verification_token="<WEBHOOK-VERIFICATION-TOKEN>"
-)
-
-whatsapp = pywce.WhatsApp(whatsapp_config=wa_config)
+# ...
 ```
 
 ### Webhook Challenge
@@ -37,28 +37,19 @@ To be able to receive notifications (webhooks) when a user chats with your chatb
 Pywce comes with `"utility"` package to simplify some of the common tasks when working with WhatsApp Cloud Api
 
 ```python
-# ~ as before ~
+# ~ skipped imports
 
-@app.get("/webhook")
-def verify_webhook(
-        mode: str = Query(...),
-        token: str = Query(...),
-        challenge: str = Query(...)
-) -> Response:
-    """
-    Verify WhatsApp webhook using query parameters.
+@app.get("/chatbot/webhook")
+def verifier(request: Request) -> Response:
+    """Verify WhatsApp webhook callback URL challenge."""
+    params = request.query_params
+    mode, token, challenge = params.get("hub.mode"), params.get("hub.verify_token"), params.get("hub.challenge")
 
-    :return: HTTP Response with challenge content if verification succeeds, 
-             otherwise "Forbidden"
-    """
-    result = whatsapp.util.verify_webhook_verification_challenge(
-        mode=mode, token=token, challenge=challenge
-    )
+    if whatsapp.util.webhook_challenge(mode, challenge, token):
+        return Response(content=challenge, status_code=200)
 
-    if result is None:
-        return Response(content="Forbidden", status_code=403)
+    raise HTTPException(status_code=403, detail="Forbidden")
 
-    return Response(content=result, status_code=200)
 ```
 
 ### Handle Webhook payload
@@ -70,12 +61,11 @@ check if webhook payload is a valid message payload and much more
 
 ```python
 # ~ as before ~
-@app.post("/webhook")
+
+@app.post("/chatbot/webhook")
 async def process_webhook(request: Request) -> Response:
     """
     Handle incoming webhook events from WhatsApp and process them
-    :param request: FastAPI Request object containing the webhook payload
-    :return: HTTP Response with "ACK" content
     """
     payload = await request.json()
     headers = dict(request.headers)
@@ -83,8 +73,8 @@ async def process_webhook(request: Request) -> Response:
     if whatsapp.util.verify_webhook_payload(payload, headers):
         if whatsapp.util.is_valid_webhook_message(payload):
             # returns [WaUser] model
-            _user = whatsapp.util.get_wa_user(payload)
-            logger.info(f"Current whatsapp user: {_user}")
+            user = whatsapp.util.get_wa_user(payload)
+            logger.info(f"Current whatsapp user: {user}")
 
             # returns [ResponseStructure] model
             response = whatsapp.util.get_response_structure(payload)
@@ -93,7 +83,7 @@ async def process_webhook(request: Request) -> Response:
             match response.typ:
                 case pywce.MessageTypeEnum.TEXT:
                     result = await whatsapp.send_message(
-                        recipient_id=_user.wa_id,
+                        recipient_id=user.wa_id,
                         message=f"You said: {response.body.get('body')}"
                     )
 
@@ -101,11 +91,11 @@ async def process_webhook(request: Request) -> Response:
 
                 case _:
                     result = await whatsapp.send_message(
-                        recipient_id=_user.wa_id,
+                        recipient_id=user.wa_id,
                         message=f"Received whatsapp message type as: {response.typ}"
                     )
 
-            if whatsapp.util.was_request_successful(_user.wa_id, result):
+            if whatsapp.util.was_request_successful(user.wa_id, result):
                 return Response(content="Ack", status_code=200)
 
     return Response(content="Err", status_code=400)
@@ -125,6 +115,7 @@ class WaUser:
     wa_id: str = None
     # current message id
     msg_id: str = None
+    # webhook timestamp
     timestamp: str = None
 ```
 
@@ -142,10 +133,10 @@ For example, `text` messages usually have a response payload as below (Only show
 "messages": [
     {
         "from": "16315551234",
-        "id": "wamid.ABGGFlCGg0cvAgo-sJQh43L5Pe4W",
+        "id": "wamid.ABGGFlCGg0cvAgo-sJQh43L5Pe4W...",
         "timestamp": "1603059201",
         "text": {
-            "body": "Hello this is an answer"
+            "body": "Hello this is a message body"
         },
         "type": "text"
     }
@@ -156,17 +147,17 @@ The `ResponseStructure` will be as below
 
 ```python
 class ResponseStructure:
-    body: Any = {"body": "Hello this is an answer"}
+    body: Any = {"body": "Hello this is a message body"}
     typ: MessageTypeEnum = MessageTypeEnum.TEXT
 ```
 
-Let's check a image message
+Let's check an image message
 
 ```json
 "messages": [
         {
             "from": "15226273733",
-            "id": "wamid.8127ygd7d83",
+            "id": "wamid.8127ygd7d83...",
             "timestamp": "17727273",
             "type": "image",
             "image": {
@@ -195,3 +186,13 @@ class ResponseStructure:
 I hope you get the idea of how the model will be like.
 
 Happy chatbot development 😀
+
+---
+
+### Performance tip
+WhatsApp is a high traffic channel, instead of processing each message as it comes > process it > sends message back > acknowledge the whatsapp webhook.
+
+If using, FastApi, you can take advantage of [Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/) or any event queueing mechanism to ack webhook while processing the webhook in the background.
+
+This is because, if your sync logic fails, and whatsapp does not get a success acknowledgement of the webhook, it uses exponential retry strategy thereby seeing same webhook being retried to be delivered
+until whatsappe exhausts its retries. This may lead to duplicate message processing if your logic does not handle this well.

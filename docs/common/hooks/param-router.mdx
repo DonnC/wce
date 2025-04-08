@@ -1,0 +1,48 @@
+---
+title: Router Hook
+description: Template redirects
+---
+
+The only job for this hook is to provide dynamic routing.
+
+Wondering how to dynamically redirect user to a certain stage? Use the router to act as a route decider switch.
+
+It is a `POST` hook that is processed before the engine decides the next route. If a router hook is defined, the template routes are ignored.
+
+## Example
+```yaml
+"CLOSE_ACC_STAGE":
+  kind: button
+  router: "example.hooks.service.account_route_switch"
+  message:
+    title: Close Account
+    body: "Confirm account type closure?"
+    buttons:
+      - Savings Account
+      - Loan Account
+  params:
+    account-type: Individual
+    currency: ZAR
+  routes:
+    "savings account": "ACCOUNTS_SAVING_STAGE"
+    "loan account": "LOANS_STAGE"
+```
+
+In your business logic hook, you can do your decision making and redirect user like below
+
+```python
+# example/hooks/service.py
+from pywce import HookArg, EngineConstants, hook
+
+@hook
+def account_route_switch(arg: HookArg) -> HookArg:
+  # if params currency is ZAR, then
+  # dynamically redirect user template stage
+  # for collecting zar account details
+
+  if args.params.get('currency') == 'ZAR':
+      next_route = {EngineConstants.DYNAMIC_ROUTE_KEY: "REQUEST_ZAR_ACC_DETAILS_STAGE"}
+      arg.additional_data = next_route
+
+  return arg
+```

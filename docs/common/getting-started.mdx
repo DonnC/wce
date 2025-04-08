@@ -7,97 +7,27 @@ description: Get started with WCE.
   I assume you have your WhatsApp account and credentials in place
 </Warning>
 
-Checkout the corresponding WCE above for full details on engine configuration.
+Select your preffered environment from the tab for full details on configuration.
 The basic steps to configure each of the engine is as below
 
-<Steps>
-    <Step title="Clone engine" icon="git">
-        Clone or download your preferred engine repository:
+## How WCE works
+WCE engine approach is straight forward
 
-        ```bash
-        # java
-        git clone git@github.com:DonnC/jawce.git
-        ```
+1. Imagine user starts your chatbot for the first time. The usual `hie` or `start`
+2. The engine checks for the current stage in the session (no conversational template stages found at this stage), and it takes the start template that you configure and set it as the current template.
+3. It evaluates this current template `hooks` (or call them template guardrails) and processes all `PRE-HOOK`s on it.
+4. It processes, renders the template as a proper WhatsApp message and send to user. (a lot more happens under the hood)
+5. When a user respond to that message via WhatsApp, the engine lookup the current template in the session and processes all `POST-HOOKS` on it.
+6. The engine checks for the `routes` defined on the current template and maps them to the user input and their next logical template stage
+7. If a mapping is found, it sets it as current template and the process repeats from `step 2` 
 
-        ```bash
-        # python
-        git clone git@github.com:DonnC/pywce.git
-        ```
+The process repeats on and on 🔁
 
-        After successful clone, open the project in an IDE of your choice
-        (Both engines are developed using JetBrains IDEs)
-    </Step>
-    <Step title="Install dependencies" icon="cloud-arrow-down">
-        For `JAWCE` - Install project maven dependencies
+## Main Components
+The engine has main components which you need to understand.
 
-        For `PYWCE` - Pip install requirements in `requirements.txt`
+1. Templates - conversational flow
+2. Triggers - conversation starters
+3. Hooks - supercharge template with business logic
 
-        From now on, we will focus on the `example` folder with the sample chatbot
-    </Step>
-    <Step title="Setup Credentials" icon="user-lock">
-        Remember the WhatsApp Credentials we mentioned?
-
-        #### For Java
-            Navigate to the `/jchatbot/src/main/resources/application.yml` properties file and replace secret keys with your
-            account credentials
-            ```yaml
-            chatbot:
-                configs:
-                    # ...
-                    hub-token: "replace-with-your-hub-token"
-                    access-token: "replace-with-your-access-token"
-                    phone-number-id: "replace-with-your-phone-number-id"
-            ```
-
-        #### For Python
-            Navigate to the `Settings.py` file and set your configs appropriately
-    </Step>
-    <Step title="Test Run" icon="whatsapp">
-        #### For Java
-            Before you run the project, setup the full path to the project resources folder
-
-            ```yaml
-            resources:
-                templates: ..full/path/to/templates
-                triggers: ..full/path/to/triggers
-                watcher: ..full/path/to/watch
-            ```
-
-            E.g If you cloned the project in
-
-            `C:\Users\me\projects\jawce`
-
-            Your path folders will be as
-
-            `C:\\Users\\me\\projects\\jawce\\example\\jchatbot\\src\\main\\resources\\templates`
-
-            If all goes well,
-
-            Start your development server
-
-            Run the `chatbot` project, if all goes well. It should run on the port configured in the application properties file.
-
-            ---
-
-        #### For Python
-            The sample chatbot uses FastApi. Ensure `fastapi` is installed
-    </Step>
-    <Step title="Webhook Config" icon="globe">
-        If the example chatbot run successfully. You can configure `NGROK` or any other tunneling services to tunnel your local setup to obtain an HTTPS webhook
-        to configure on Meta developer portal.
-
-        In a new terminal, do
-        ```bash
-        ngrok http <service port>
-        ```
-
-        The webhook url will be accessible on `https://ngrok-url/jawce/webhook` for `JAWCE` and `https://ngrok-url/pywce/webhook` for `PYWCE`.
-
-        You can use the generated https url to configure on your meta developer application portal as below
-        <Image zoom src="/assets/ngrok.png" />
-
-        Example dev console portal config
-        <Image zoom src="/assets/webhook-config.png" />
-    </Step>
-
-</Steps>
+Let's dive deep into these components.

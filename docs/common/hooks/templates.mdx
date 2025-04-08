@@ -2,54 +2,144 @@
 title: Template Hook
 description: Populate template message variables dynamically
 ---
+
 Template hook will likely be your best buddie in your conversation flows.
 
 The engine uses the `{{ mustache }}` templating engine (like Python Jinja) to populate the dynamic variables.
-It is used to dynamically create a conversation message body.
+It is used to fill in all the dynamic variables when creating a conversation message body.
 
-<Info>
-    **JAWCE** also supports `RESTFul` based hooks.
-    Only JAWCE supports both reflective and restful based hooks
-</Info>
 
+## Usage
+Template hook works in 2 cases
+1. As a general template hook for any template kind (type)
+2. On dynamic template kind to generate a dynamic template message
+
+
+### 1. General template hook
+
+#### JAWCE template
 
 ```yaml
-"PAYMENT_ORDER":
-  type: text
-  template: "rest:/gpay/order"
-  message:
-   - "Thank you {{ user }}."
-   - ""
-   - "Your Avon order has been processed with reference: {{ reference }}"
-   - "for {{ currency }} {{ amount }}"
+"6005":
+  kind: text
+  template: "com.example.ExampleReflectionHook:getOrderInfo"
+  message: "Provide reference for order: {{ type }}, {{ currency }} {{ amount }}"
   routes:
-    "re:.*": "HOME_MENU"
+    "re:\\d+": "6006"
 ```
 
-The tagged template hook should return a render-payload matching each variable in the defined template
+#### PYWCE template
 
-```java
-@RestController
-class OrderController {
-    @PostMapping("/order")
-    public Object orderDetailsTemplate(@RequestBody HookArgsRest args) {
-      // .. process business logic
-      // .. get order details from db or a service
-      // .. return a render-payload of Map matching template variables
+```yaml
+"6005":
+  kind: text
+  template: "example.booking.order.get_order_info"
+  message: "Provide reference for order: {{ type }}, {{ currency }} {{ amount }}"
+  routes:
+    "re:\\d+": "6006"
+```
 
-      args.setTemplateDynamicBody(
-        new TemplateDynamicBody(
-            null,
-            null,
-            Map.of(
-                    "user", args.getChannelUser().name(),
-                    "reference", "order-#1234",
+##### Hook business logic
+
+<CodeGroup title="Business Logic">
+  ```python
+  # example/booking/order.py
+
+  from pywce import HookArg, TemplateDynamicBody
+
+  def get_order_info(arg: HookArg) -> HookArg:
+     print(f"Received args: {arg}")
+    
+     # assume data is fetched from db or a service
+     data = {
+        "type": "Gaming Chair",
+        "currency": "USD",
+        "amount": 3.50
+     }
+
+     arg.template_body = TemplateDynamicBody(render_template_payload=data)
+
+     return arg
+```
+
+  ```java
+    // com/example/ExampleReflectionHook.java
+
+    @Sl4j
+    public class ExampleReflectionHook {
+      private final HookArgs args;
+
+      public ExampleReflectionHook(HookArgs args) {
+        this.args = args;
+      }
+
+      public Object getOrderInfo() {
+        log.info("Received hook args: {}", this.args);
+
+        args.setTemplateDynamicBody(
+            new TemplateDynamicBody(
+                null,
+                null,
+                Map.of(
+                    "type", "Gaming Chair",
                     "currency", "USD",
-                    "amount", 20.50
-            )
-        ));
+                    "amount", 3.50
+                  )
+              ));
 
-    return args;
+        return args;
+      }
     }
-}
+```
+
+</CodeGroup>
+
+
+---
+
+
+### 2. Dynamic template
+Create a template message dynamically. This is useful when you want to display a different WhatsApp message based on some conditions.
+
+For example: If user has 2 items, display a button, if they have more than 2, display a list else display a general text message
+
+```yaml
+"DYNAMIC-STAGE":
+  kind: dynamic
+  template: "example.booking.order.display_order"
+  message: "{{ body }}"
+  routes:
+    "re:.*": "NEXT-STAGE"
+```
+
+#### Dynamic business logic
+
+```python
+  # example/booking/order.py
+
+  from pywce import HookArg, TemplateDynamicBody, template
+
+  def display_order(arg: HookArg) -> HookArg:
+     print(f"Received args: {arg}")
+
+     # ['empty trash', 'collect rent', 'debug code']
+    tasks: list = arg.session_manager.get(session_id=arg.session_id, key="tasks")
+    
+    if 1 < len(tasks) < 3:
+        tpl = template.ButtonTemplate(
+            message=template.ButtonMessage(
+                buttons=tasks,
+                title="Tasks",
+                body="Select your task to manage it"
+            )
+        )
+        
+    else:
+        tpl = template.TextTemplate(
+            message="You do not have any tasks. Add tasks to view them"
+        )
+
+    arg.template_body = TemplateDynamicBody(dynamic_template=tpl)
+
+    return arg
 ```

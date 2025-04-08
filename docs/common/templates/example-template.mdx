@@ -9,7 +9,7 @@ We can have a start menu (first step) as below
 
 ```yaml
 "MAIN_MENU":
-  type: button
+  kind: button
   message:
     body: |
       Hi, I am WCE 🤖, your ERP System booking assistant.
@@ -25,7 +25,7 @@ We can have a start menu (first step) as below
 
 A lot is happening here, but let's break it down.
 
-The `type` - Specifies that this template should show as a button message on the end user on WhatsApp.
+The `kind` - Specifies that this template should show as a button message on the end user on WhatsApp.
 
 The `message` - Message to show the user, like a button body
 
@@ -47,7 +47,7 @@ Let's see more templates
     <TabItem value="first">
         ```yaml
         "BOOK_STAGE":
-            type: button
+            kind: button
             message:
                 body: "Start your system demo booking request by clicking the start button"
                 footer: ERP Demo
@@ -63,7 +63,7 @@ Let's see more templates
     <TabItem value="second">
         ```yaml
         1000:
-            type: button
+            kind: button
             prop: selectedErp
             message:
                 body: "Great choice, select your ERP of choice"
@@ -79,7 +79,7 @@ Let's see more templates
     <TabItem value="third">
         ```yaml
         2000:
-            type: text
+            kind: text
             prop: selectedBookingDate
             message: |
                 Kindly provide your preferred demo date and time in 24hr format
@@ -94,7 +94,7 @@ Let's see more templates
     <TabItem value="forth">
         ```yaml
         3000:
-            type: button
+            kind: button
             message:
                 body: "Your booking has been recorded. I will notify you 30mins before 🙂"
                 buttons:
@@ -110,4 +110,4 @@ By now you can picture what the above is doing.
 
 This will be the chatbot conversation brain and it will be hopping from 1 stage to the other as you define it 😀.
 
-PS: The templates above you might not need to understand what each part works, we will look into that in later sections
+PS: Let's dive into different template kinds

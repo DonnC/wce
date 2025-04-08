@@ -1,0 +1,94 @@
+---
+title: Template Properties
+description: Common template fields
+---
+
+As you see examples in the previous section, all templates have some similar properties / fields, some are required and some are optional.
+
+A full template with these fields will look like below
+```yaml
+"MY-STAGE":
+  # required fields
+  kind: text
+
+  # this depends on kind above
+  message: A simple example text
+
+  routes:
+    "user-input-match-1": "MATCH-1-NEXT-STAGE"
+    "re:regex-match": "REGEX-MATCH-NEXT-STAGE"
+
+  # optional fields
+  ack: false
+  authenticated: false
+  checkpoint: false
+  prop: "my_prop_key"
+  session: true
+  transient: false
+  message-id: null
+  params:
+   name: pywce
+   age: 2
+```
+
+## kind
+This is crucial, it defines the template type. The kind maps to a WhatsApp message that will be created and send to user.
+The engine supports complex kinds like `dynamic` and `template` kinds which requires an advanced approach besides the common kinds.
+
+## message
+It depends on `kind` field. Some types may require other additional fields defined on the `message` field.
+For example, `button` kind will require a message field to be an object whilst the `text` kind only require a string
+
+We will look at different message types in later sections
+
+## routes
+These define the intelligent mapping of user input to their next template stage to go to. Its your engine routing mechanism, it can redirect user to a previous stage or to jump to another 1.
+
+It either accept an exact user input which you expect, especially in button templates, the user input will be your defined buttons in lowercase.
+
+It can also take a regex, prefixed with `re:<your-regex>`. Regex routes are evaluated first before the non-regex mappings.
+
+Routes also acts as guardrails for user input before going to next stage. You can use regex as input validator. If no match is found in routes, a default message is sent to user prompting them for a valid input.
+
+## ack
+Want to acknowledge a user respond message? (blue-tick) flag this to true
+
+## authenticated
+Your chatbot might have authentication, you can guard a particular template from being accessed by an unauthenticated user by flagging this to true.
+
+WCE authentication mechanism is simple, when a user is authenticated you must set a authentication-key in user session to let the engine know that if this key is set, then a user is authenticated.
+
+## checkpoint
+Just like in computer games, it flags this template as a checkpoint so that later down the conversation, when a user types e.g Go to menu or restart, instead of going way upstream, you can take a user back to the closest main menu or template to start off from.
+
+## prop
+A very crucial field. Set this field to store any user input which they would have entered on this stage. Props are accessible via engine session manager either in another template or in your business logic.
+
+Set these on templates were you usually request user input which you want to store to retrieve later.
+```yaml
+"2000":
+  type: text
+  prop: username
+  message: "Provide your name below"
+  routes:
+    "re:.*": "3000"
+```
+
+direct prop usage in a template
+
+```yaml
+"3000":
+  type: text
+  message: "Confirm your name is {{ p.username }}?"
+  routes:
+    "yes": "4000"
+    "no": "2000"
+```
+
+## params
+Need to pass constant data to hooks, you can define them as params.
+In the sample above, if any `hook` is defined, all the params will be passed down to that hook where you can use them in your business logic.
+
+---
+
+Let's dive into an example chatbot template flow

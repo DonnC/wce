@@ -6,20 +6,17 @@ This section will show how the general hooks are processed, These hooks include:
 
 - on-receive       - `[POST]` logic to process after user responds / sends a message
 - on-generate      - `[PRE]` logic to process before a template is processed for rendering to user
-- template         - `[PRE]` usually used to dynamically create a template message body
 - middleware       - `[POST]` middleware logic to process mid-flight
-- validator        - `[POST]` logic specifically for handling any user data validation
-
 
 Consider an example for `middleware` below
 
-> The example below works for `on-receive`, `on-generate`, `middleware`, `validator` hooks
+> The example below works for `on-receive`, `on-generate` and `middleware` hooks
 
 ## Middleware
 Imagine you want to do any general business logic mid-flight of the template processing.
-You can define a `middleware` template just for that.
+You can define a `middleware` hook just for that.
 
-An example will be saving some data to the db or retrieving some and save them in the user session
+An example will be saving some data to the db or retrieving some data and save them in the user session
 
 ```yaml
 1000:
@@ -35,33 +32,25 @@ When user responds, the hook will be processed.
 
 Consider a sample business logic
 
-<CodeGroup title="Middleware Hook">
-  ```python
-  # example.engine_chatbot.hooks.account_service.py
+```python
+  # example/engine_chatbot/hooks/account_service.py
 
   from pywce import HookArg
 
   def fetch_accounts(arg: HookArg) -> HookArg:
     """
-     fetch corresponding user accounts
-     & save to user session
+     fetch corresponding user accounts & save to user session to retrieve later
     """
     print(f"Received hook arg: {arg}")
 
     if arg.user_input.lower() == "transfer":
-      user_accounts = AccountsManager(mobile=arg.user.wa_id).get_accounts()
+      user_accounts: list = AccountsManager(mobile=arg.session_id).get_accounts()
     
       arg.session_manager.save(
-        session_id=arg.user.wa_id,
+        session_id=arg.session_id,
         key="accounts",
         data=user_accounts
       )
 
     return arg
 ```
-
- ```java
-// TODO: WIP
-```
-
-</CodeGroup>

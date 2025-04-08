@@ -14,9 +14,19 @@
   },
   "anchors": [
     {
-      "title": "Homepage",
+      "title": "Python",
       "icon": "github",
-      "href": "https://github.com/DonnC/wce"
+      "href": "https://github.com/DonnC/pywce"
+    },
+    {
+      "title": "Frappe",
+      "icon": "github",
+      "href": "https://github.com/DonnC/frappe-pywce"
+    },
+    {
+      "title": "Java",
+      "icon": "github",
+      "href": "https://github.com/DonnC/jawce"
     },
     {
       "title": "LinkedIn",
@@ -27,53 +37,26 @@
   "tabs": [
     {
       "id": "root",
-      "title": "About",
+      "title": "Core",
       "href": "/"
     },
     {
-      "id": "pywce",
+      "id": "python",
       "title": "Pywce",
       "href": "/python"
     },
     {
-      "id": "jawce",
-      "title": "Jawce",
-      "href": "/java"
+      "id": "frappe",
+      "title": "Frappe",
+      "href": "/frappe"
     },
     {
-      "id": "session",
-      "title": "Session",
-      "href": "/session"
+      "id": "java",
+      "title": "Jawce",
+      "href": "/java"
     }
   ],
   "sidebar": [
-    {
-      "group": "Config",
-      "tab": "pywce",
-      "pages": [
-        {
-          "title": "WhatsApp Library",
-          "href": "/python/standalone",
-          "icon": "whatsapp"
-        },
-        {
-          "title": "Pywce Engine",
-          "href": "/python/as-engine",
-          "icon": "python"
-        }
-      ]
-    },
-    {
-      "group": "Config",
-      "tab": "jawce",
-      "pages": [
-        {
-          "title": "Extend",
-          "href": "/java/extend",
-          "icon": "java"
-        }
-      ]
-    },
     {
       "group": "Getting Started",
       "tab": "root",
@@ -110,19 +93,53 @@
           "icon": "pen-nib"
         },
         {
+          "title": "Properties",
+          "href": "/common/templates/fields"
+        },
+        {
           "title": "Example: Booking Bot",
           "href": "/common/templates/example-template",
           "icon": "pen-nib"
         },
         {
           "title": "Messages",
-          "href": "/common/templates/messages",
+          "href": "/common/templates/messages-kinds",
           "icon": "facebook-messenger"
         },
         {
           "title": "Flow Template",
           "href": "/common/templates/flow-template",
           "icon": "facebook-messenger"
+        }
+      ]
+    },
+    {
+      "group": "Managers",
+      "tab": "root",
+      "pages": [
+        {
+          "title": "About",
+          "href": "/common/managers/index",
+          "icon": "info"
+        },
+        {
+          "title": "Session",
+          "href": "/common/managers/session"
+        },
+        {
+          "title": "Storage",
+          "href": "/common/managers/storage"
+        }
+      ]
+    },
+    {
+      "group": "Triggers",
+      "tab": "root",
+      "pages": [
+        {
+          "title": "About",
+          "href": "/common/triggers/index",
+          "icon": "info"
         }
       ]
     },
@@ -136,28 +153,7 @@
           "icon": "anchor"
         },
         {
-          "title": "Prop",
-          "href": "/common/hooks/prop",
-          "icon": "bolt"
-        },
-        {
-          "group": "Creating Hooks",
-          "icon": "file-circle-plus",
-          "pages": [
-            {
-              "title": "Intro",
-              "href": "/common/hooks/create/intro",
-              "icon": "anchor"
-            },
-            {
-              "title": "Reflective Hooks",
-              "href": "/common/hooks/create/reflection",
-              "icon": "java"
-            }
-          ]
-        },
-        {
-          "title": "General Hook",
+          "title": "General Hooks",
           "href": "/common/hooks/general-hooks",
           "icon": "atom"
         },
@@ -167,20 +163,9 @@
           "icon": "anchor"
         },
         {
-          "group": "More Hooks",
-          "icon": "anchor",
-          "pages": [
-            {
-              "title": "Other Hooks",
-              "href": "/common/hooks/others",
-              "icon": "anchor"
-            },
-            {
-              "title": "Additional Hooks",
-              "href": "/common/hooks/others/more-hooks",
-              "icon": "anchor"
-            }
-          ]
+          "title": "Router Hook",
+          "href": "/common/hooks/param-router",
+          "icon": "anchor"
         }
       ]
     },
@@ -212,6 +197,38 @@
         {
           "title": "Extend",
           "href": "/java/extend",
+          "icon": "code"
+        }
+      ]
+    },
+    {
+      "group": "Setup",
+      "tab": "python",
+      "pages": [
+        {
+          "title": "As chatbot engine",
+          "href": "/python/as-engine",
+          "icon": "python"
+        },
+        {
+          "title": "As client library",
+          "href": "/python/standalone",
+          "icon": "whatsapp"
+        }
+      ]
+    },
+    {
+      "group": "Getting Started",
+      "tab": "frappe",
+      "pages": [
+        {
+          "title": "Setup",
+          "href": "/frappe/index",
+          "icon": "gear"
+        },
+        {
+          "title": "Hooks",
+          "href": "/frappe/hooks",
           "icon": "code"
         }
       ]

@@ -1,0 +1,52 @@
+---
+title: Templates Datasource
+description: template storage management
+---
+
+The storage manager handles only 2 tasks:
+1. Get a template by stage name
+2. Get all defined triggers
+
+By implementing this class, it gives you option to define your own template storage source.
+
+<Info>
+    WCE comes with default `StorageManager` implementation out-of-the-box
+
+    It comes with YAML templates support by default.
+</Info>
+
+
+## Manager interface signature
+Below is the interface you can implement to define your own custom template source.
+
+```python
+class IStorageManager(ABC):
+    """Abstract base class for different templates storage sources."""
+
+    @abstractmethod
+    def load_templates(self) -> None:
+        """(Optional) Load chatbot templates."""
+        pass
+
+    @abstractmethod
+    def load_triggers(self) -> None:
+        """(Optional) Load chatbot triggers."""
+        pass
+
+    @abstractmethod
+    def exists(self, name: str) -> bool:
+        """Check if a template stage exists."""
+        pass
+
+    @abstractmethod
+    def triggers(self) -> List[EngineRoute]:
+        """Get all triggers"""
+        pass
+
+    @abstractmethod
+    def get(self, name: str) -> EngineTemplate:
+        """Load a single template by its name (stage)"""
+        pass
+```
+
+> You wont necessarily interact with this manager implementation as it is used heavily internally by the engine.
